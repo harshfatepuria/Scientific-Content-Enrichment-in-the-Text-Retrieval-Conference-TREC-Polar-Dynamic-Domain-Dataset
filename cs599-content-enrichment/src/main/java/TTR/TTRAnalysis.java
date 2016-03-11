@@ -1,5 +1,6 @@
 package TTR;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +8,6 @@ import java.io.InputStream;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ToXMLContentHandler;
 import org.jsoup.Jsoup;
 import org.xml.sax.ContentHandler;
@@ -15,19 +15,21 @@ import org.xml.sax.SAXException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class TTRAnalysis
 {
 	public static String parseBodyToHTML(String filePath) throws IOException, SAXException, TikaException {
-	    ContentHandler handler = new BodyContentHandler(
-	            new ToXMLContentHandler());
-	 
+//	    ContentHandler handler = new BodyContentHandler(new ToXMLContentHandler());
+	    ContentHandler handler = new ToXMLContentHandler();
+		 
 	    AutoDetectParser parser = new AutoDetectParser();
 	    Metadata metadata = new Metadata();
-	    
-	    try (InputStream stream =new FileInputStream(filePath)) {
+	    try (InputStream stream =new FileInputStream(new File(filePath))) {
 	        parser.parse(stream, handler, metadata);
 	        return handler.toString();
 	    }
+//	    catch(Exception e){System.out.println(e);}
+//		return " ";
 	}
 	
 	public static String html2text(String html) {
@@ -55,32 +57,46 @@ public class TTRAnalysis
 		return ratio;
 	}
 	
-	public static String[] fillTTRArray(String filePath) throws IOException, SAXException, TikaException
+	public static String getRelevantText(String filePath) throws IOException, SAXException, TikaException
 	{
-		int i;
-		float total=0,avg=0;;
+		int i,j;
+		float total=0,avg=0;
+		float TTRArray[];
+		StringBuilder builder = new StringBuilder();
 		String s=parseBodyToHTML(filePath);
 		s=s.trim();
 		
 		String[] str_array = s.split("\n");
 		
-		//System.out.println(s);
 		
-		float TTRArray[]=new float[str_array.length];
 		for(i=0; i<str_array.length; i++)
 		{
-			TTRArray[i]=getTTRatio(str_array[i]);
-			total+=TTRArray[i];
+			if(str_array[i].contains("<body>"))
+				break;
 		}
-		avg=total/str_array.length;
-		
-		for(i=0; i<str_array.length; i++)
+		j=i;
+		if(j<str_array.length)
 		{
-			if(TTRArray[i]>avg)
-				str_array[i]=html2text(str_array[i]);
-			else
-				str_array[i]=" ";
-		}	
-		return str_array;
+			TTRArray=new float[str_array.length-i];
+			for(i=j; i<str_array.length; i++)
+			{
+				TTRArray[i-j]=getTTRatio(str_array[i]);
+				total+=TTRArray[i-j];
+			}
+			avg=total/str_array.length;
+			
+			for(i=j; i<str_array.length; i++)
+			{
+				if(TTRArray[i-j]>avg)
+				{
+					builder.append(html2text(str_array[i]));
+					builder.append("\n");
+				}
+			}	
+			return builder.toString();
+		}
+		else
+			return "";
+		
 	}
 }
