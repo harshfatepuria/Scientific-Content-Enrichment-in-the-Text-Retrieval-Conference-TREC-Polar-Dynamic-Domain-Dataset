@@ -8,6 +8,11 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
@@ -45,34 +50,64 @@ public class GeoParserRunner {
         geoParser.initialize(modelUrl);
 	}
 	
-	public void parse() throws IOException {
+	public List<String> parse() throws IOException {
 		URI baseFolderUri = Paths.get(baseFolder).toUri();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		List<String> successPath = new ArrayList<>();
+		
+		ExecutorService executor = Executors.newFixedThreadPool(4);
 		
 		Files.walk(Paths.get(baseFolder))
 			.filter(Files::isRegularFile)
 			.forEach(path -> {
-				try {
-					String relativePath = baseFolderUri.relativize(path.toUri()).toString();
-					Metadata metadata = parseFile(path.toFile());
-					
-					if (metadata.get("Geographic_NAME") == null) {
-						return;
+				Runnable task = () -> {
+					try {
+						String relativePath = baseFolderUri.relativize(path.toUri()).toString();
+						File jsonFile = new File(resultFolder, relativePath + ".geodata");
+						
+						if (jsonFile.exists()) {
+							return;
+						}
+						
+						Metadata metadata = parseFile(path.toFile());
+						if (metadata.get("Geographic_NAME") == null) {
+							return;
+						}
+						
+						GeoData geoData = new GeoData(relativePath, metadata);
+						
+						String json = gson.toJson(geoData);
+						
+						jsonFile.getParentFile().mkdirs();
+						try(PrintWriter out = new PrintWriter(jsonFile)) {
+							out.print(json);
+						}
+						
+						successPath.add(relativePath);
+					} catch (Exception e) {
+						System.out.println(path.toString());
 					}
-					
-					GeoData geoData = new GeoData(relativePath, metadata);
-					
-					String json = gson.toJson(geoData);
-					File jsonFile = new File(resultFolder, relativePath + ".geodata");
-					jsonFile.getParentFile().mkdirs();
-					try(PrintWriter out = new PrintWriter(jsonFile)) {
-						out.print(json);
-					}
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-		});
+				};
+				
+				executor.submit(task);
+			});
+		
+		try {
+			System.out.println("attempt to shutdown executor");
+			executor.shutdown();
+			executor.awaitTermination(7, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+		    System.err.println("tasks interrupted");
+		}
+		finally {
+		    if (!executor.isTerminated()) {
+		        System.err.println("cancel non-finished tasks");
+		    }
+		    executor.shutdownNow();
+		    System.out.println("shutdown finished");
+		}
+		
+		return successPath;
 	}
 	
 	public Metadata parseFile(File file) throws IOException, TikaException, SAXException {
