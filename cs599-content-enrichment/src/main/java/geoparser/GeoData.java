@@ -1,4 +1,4 @@
-package data;
+package geoparser;
 
 import org.apache.tika.metadata.Metadata;
 

@@ -1,4 +1,4 @@
-package script;
+package geoparser;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,18 +27,22 @@ import org.xml.sax.SAXException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import data.GeoData;
-
 public class GeoParserRunner {
 	private GeoParser geoParser;
 	private String nerLocationModelPath = "org/apache/tika/parser/geo/topic/en-ner-location.bin";
 	
 	private String baseFolder;
 	private String resultFolder;
+	private Integer numberOfThread;
 	
 	public GeoParserRunner(String baseFolder, String resultFolder) throws Exception {
+		this(baseFolder, resultFolder, Runtime.getRuntime().availableProcessors());
+	}
+	
+	public GeoParserRunner(String baseFolder, String resultFolder, Integer numberOfThread) throws Exception {
 		this.baseFolder = baseFolder;
 		this.resultFolder = resultFolder;
+		this.numberOfThread = numberOfThread;
 		
 		initializeParser();
 	}
@@ -54,21 +58,20 @@ public class GeoParserRunner {
 		URI baseFolderUri = Paths.get(baseFolder).toUri();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		List<String> successPath = new ArrayList<>();
-		
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+		ExecutorService executor = Executors.newWorkStealingPool(numberOfThread);
 		
 		Files.walk(Paths.get(baseFolder))
 			.filter(Files::isRegularFile)
 			.forEach(path -> {
+				String relativePath = baseFolderUri.relativize(path.toUri()).toString();
+				File jsonFile = new File(resultFolder, relativePath + ".geodata");
+				
+				if (jsonFile.exists()) {
+					return;
+				}
+				
 				Runnable task = () -> {
 					try {
-						String relativePath = baseFolderUri.relativize(path.toUri()).toString();
-						File jsonFile = new File(resultFolder, relativePath + ".geodata");
-						
-						if (jsonFile.exists()) {
-							return;
-						}
-						
 						Metadata metadata = parseFile(path.toFile());
 						if (metadata.get("Geographic_NAME") == null) {
 							return;
@@ -113,7 +116,7 @@ public class GeoParserRunner {
 	public Metadata parseFile(File file) throws IOException, TikaException, SAXException {
 		ContentHandler handler = new ToXMLContentHandler();
         Metadata metadata = new Metadata();
-        ParseContext context =new ParseContext();
+        ParseContext context = new ParseContext();
         
         Tika tika = new Tika();
         String text = tika.parseToString(file);
