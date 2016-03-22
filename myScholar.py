@@ -330,7 +330,7 @@ class ScholarArticle(object):
         dict={}
         for item in items:
             if item[0] is not None:
-                dict[item[1]]=item[0]
+                dict[item[1].lower()]=item[0]
         return dict
 
 
@@ -1130,33 +1130,28 @@ def citation_export(querier):
 
 
 def json_export(querier):
-
     articles = querier.articles
     dict={}
     i=0
-    print len(articles)
+    # print len(articles)
     for art in articles:
         dict[i] = art.as_json()
 
-        # result=[]
-        # result=art.as_citation().split("\n")
-        # for i in range(len(result)):
-        #     if result[i].find('=')!=-1:
-        #         getDetails=result[i].split("=")
-        #         heading=getDetails[0].strip()
-        #         details=getDetails[1].strip()[1:len(getDetails[1].strip())-1]
-        #         if details[-1:]=='}':
-        #             details=details[:-1]
-        #         print heading,"->",details
-                #     print len(dict[i][heading])
-                # else:
-                #     print ""
-                #dict[i][getDetails[0].strip()]=re.search('[^{][^}]', getDetails[1].strip())
-
-        
+        result=[]
+        result=art.as_citation().split("\n")
+        for j in range(len(result)):
+            if result[j].find('=')!=-1:
+                getDetails=result[j].split("=")
+                heading=getDetails[0].strip().lower()
+                details=getDetails[1].strip()[1:len(getDetails[1].strip())-1]
+                if details[-1:]=='}':
+                    details=details[:-1]
+                # print heading,"(->)",details
+                if dict[i].get(heading,0)==0:
+                    dict[i][heading]=details
         i=i+1
     keys=json.dumps(dict, sort_keys=True)
-    # print(keys)
+    print keys
     
     
 
