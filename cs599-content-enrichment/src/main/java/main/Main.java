@@ -11,11 +11,12 @@ import com.google.gson.GsonBuilder;
 
 import geoparser.GeoParserRunner;
 import sweet.SweetOntology;
+import sweet.SweetOntology.MatchedConcept;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
-//			runSweet(args);
+			runSweet(args);
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -26,8 +27,12 @@ public class Main {
 	}
 	
 	private static void runSweet(String[] args) throws Exception {
-		SweetOntology sweet = new SweetOntology();
-		sweet.query("a");
+		SweetOntology sweet = SweetOntology.getInstance();
+		List<MatchedConcept> matched = sweet.query("Agriculture");
+		
+		for (MatchedConcept m : matched) {
+			System.out.println(m.concept);
+		}
 	}
 	
 	private static void runGeoParser(String[] args) throws Exception {
