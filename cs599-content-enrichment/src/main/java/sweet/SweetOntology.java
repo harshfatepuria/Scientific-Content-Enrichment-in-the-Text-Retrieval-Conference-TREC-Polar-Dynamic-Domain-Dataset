@@ -47,7 +47,6 @@ public class SweetOntology {
 			Files.walk(ontologyFolder.toPath())
 				.filter(Files::isRegularFile)
 				.filter(p -> "owl".equals(FilenameUtils.getExtension(p.toString())))
-				.filter(p -> !p.getFileName().toString().equals("sweetAll.owl"))
 				.forEach(path -> {
 					try {
 						conn.add(path.toFile(), "http://sweet.jpl.nasa.gov/2.3", RDFFormat.RDFXML);
@@ -59,39 +58,65 @@ public class SweetOntology {
 		System.out.println("Ontology loaded");
 	}
 	
-	private List<String> concepts;
+	private List<Concept> concepts;
 	
 	private void queryConcepts() {
+		concepts = new ArrayList<>();
+		
 		List<BindingSet> results = Repositories.tupleQuery(repository, 
-	             "SELECT DISTINCT ?s WHERE {?s rdfs:subClassOf ?o }", r -> QueryResults.asList(r));
-		concepts = results.stream().map(b -> b.getValue("s").stringValue()).collect(Collectors.toList());
+	             "SELECT DISTINCT ?s WHERE {{?s ?r ?o} UNION {?o ?r ?s}}", r -> QueryResults.asList(r));
+		
+		results.forEach(b -> {
+			String value = b.getValue("s").stringValue();
+			Integer indexOfHash = value.lastIndexOf("#");
+			if (indexOfHash < 0) {
+				return;
+			}
+			
+			concepts.add(new Concept(value, value.substring(indexOfHash + 1).toLowerCase()));
+		});
+		
+		System.out.println(concepts.size());
 	}
 	
 	public List<MatchedConcept> query(String query) {
+		return query(query, 0.2f);
+	}
+	
+	public List<MatchedConcept> query(String query, Float tolerance) {
 		List<MatchedConcept> matched = new ArrayList<>();
 		concepts.forEach(c -> {
-			String concept = c;
-			if (c.lastIndexOf("#") >= 0) {
-				concept = c.substring(c.lastIndexOf("#") + 1);
-			}
+			Float distance = c.getDistanceFromQuery(query.trim().toLowerCase());
 			
-			int distance = StringUtils.getLevenshteinDistance(query.toLowerCase(), concept.toLowerCase());
-			
-			if (distance < 0.2 * concept.length()) {
-				matched.add(new MatchedConcept(concept, distance));
+			if (distance < tolerance * c.queryName.length()) {
+				matched.add(new MatchedConcept(c.fullName, distance));
 			}
 		});
 		
-		return matched.stream().sorted((a, b) -> Integer.compare(a.distance, b.distance)).collect(Collectors.toList());
+		return matched.stream().sorted((a, b) -> Float.compare(a.distance, b.distance)).collect(Collectors.toList());
 	}
 	
 	public class MatchedConcept {
 		public String concept;
-		public Integer distance;
+		public Float distance;
 		
-		public MatchedConcept(String c, Integer d) {
+		public MatchedConcept(String c, Float d) {
 			concept = c;
 			distance = d;
+		}
+	}
+	
+	private class Concept {
+		public String fullName;
+		public String queryName;
+		
+		Concept(String fullName, String queryName) {
+			this.fullName = fullName;
+			this.queryName = queryName;
+		}
+		
+		public float getDistanceFromQuery(String query) {
+			return StringUtils.getLevenshteinDistance(queryName, query);
 		}
 	}
 }
