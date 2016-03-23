@@ -1,0 +1,25 @@
+{
+  "path": "aero/weather/DFAA76DDC554A0E5DAC9B4C630D6DCA87CA4503804779C6232BBC4DD22B2AE97",
+  "metadata": {
+    "metadata": {
+      "Geographic_LONGITUDE": [
+        "-98.5"
+      ],
+      "Geographic_NAME": [
+        "United States"
+      ],
+      "Optional_LATITUDE1": [
+        "39.00027"
+      ],
+      "Optional_LONGITUDE1": [
+        "-105.50083"
+      ],
+      "Geographic_LATITUDE": [
+        "39.76"
+      ],
+      "Optional_NAME1": [
+        "Colorado"
+      ]
+    }
+  }
+}

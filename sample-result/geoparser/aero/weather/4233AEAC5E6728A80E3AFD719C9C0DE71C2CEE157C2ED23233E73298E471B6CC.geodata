@@ -1,0 +1,25 @@
+{
+  "path": "aero/weather/4233AEAC5E6728A80E3AFD719C9C0DE71C2CEE157C2ED23233E73298E471B6CC",
+  "metadata": {
+    "metadata": {
+      "Geographic_LONGITUDE": [
+        "-98.5"
+      ],
+      "Geographic_NAME": [
+        "United States"
+      ],
+      "Optional_LATITUDE1": [
+        "38.50029"
+      ],
+      "Optional_LONGITUDE1": [
+        "-98.50063"
+      ],
+      "Geographic_LATITUDE": [
+        "39.76"
+      ],
+      "Optional_NAME1": [
+        "Kansas"
+      ]
+    }
+  }
+}

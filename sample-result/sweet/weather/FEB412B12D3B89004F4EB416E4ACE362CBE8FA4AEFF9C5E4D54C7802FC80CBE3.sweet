@@ -1,0 +1,13 @@
+{
+  "path": "aero/weather/FEB412B12D3B89004F4EB416E4ACE362CBE8FA4AEFF9C5E4D54C7802FC80CBE3",
+  "metadata": {
+    "metadata": {
+      "sweet_concept": [
+        "http://sweet.jpl.nasa.gov/2.3/humanTransportation.owl#FAA"
+      ],
+      "sweet_entity": [
+        "FAA"
+      ]
+    }
+  }
+}
