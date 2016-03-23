@@ -20,7 +20,6 @@ import shared.PathMetadata;
 public class SweetParserRunner extends AbstractParserRunner {
 	
 	private SweetParser sweetParser;
-	private String markerFolder;
 	
 	public SweetParserRunner(String baseFolder, String resultFolder) throws Exception {
 		this(baseFolder, resultFolder, null);
@@ -29,7 +28,7 @@ public class SweetParserRunner extends AbstractParserRunner {
 	public SweetParserRunner(String baseFolder, String resultFolder, String markerFolder) throws Exception {
 		setBaseFolder(baseFolder);
 		setResultFolder(resultFolder);
-		this.markerFolder = markerFolder;
+		setMarkerFolder(markerFolder);
 		initializeParser();
 	}
 	
@@ -45,21 +44,7 @@ public class SweetParserRunner extends AbstractParserRunner {
 	@Override
 	protected boolean parse(Path path, File resultFile) throws Exception {
 		String relativePath = getRelativePath(path);
-		
-		File marker = null;
-		if (markerFolder != null) {
-			marker = new File(markerFolder, relativePath);
-			if (marker.exists()) {
-				return false;
-			}
-		}
-		
 		Metadata metadata = parsePath(path);
-		
-		if (markerFolder != null) {
-			marker.getParentFile().mkdirs();
-			marker.createNewFile();
-		}
 		
 		if (metadata.get("sweet_concept") == null) {
 			return false;

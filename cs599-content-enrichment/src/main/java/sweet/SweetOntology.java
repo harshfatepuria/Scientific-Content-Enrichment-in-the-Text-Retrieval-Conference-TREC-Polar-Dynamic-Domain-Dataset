@@ -25,7 +25,7 @@ import org.openrdf.sail.memory.MemoryStore;
 public class SweetOntology {
 
 	private static SweetOntology instance;
-	private static float defaultTolerance = 0.1f;
+	private static float defaultTolerance = 0.15f;
 	
 	public static SweetOntology getInstance() throws Exception {
 		if (instance == null) {

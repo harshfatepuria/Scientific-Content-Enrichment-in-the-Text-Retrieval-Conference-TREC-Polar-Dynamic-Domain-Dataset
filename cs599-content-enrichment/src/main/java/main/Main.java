@@ -81,8 +81,9 @@ public class Main {
 		System.out.println("run GeoParser");
 		String baseFolder = "C:\\cs599\\polar-fulldump";
 		String resultFolder = "C:\\cs599\\a2\\geo\\result";
+		String markerFolder = "C:\\cs599\\a2\\geo\\marker";
 
-		GeoParserRunner geoParserRunner = new GeoParserRunner(baseFolder, resultFolder);
+		GeoParserRunner geoParserRunner = new GeoParserRunner(baseFolder, resultFolder, markerFolder);
 		List<String> successPath = geoParserRunner.runParser();
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

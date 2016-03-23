@@ -28,8 +28,13 @@ public class GeoParserRunner extends AbstractParserRunner {
 	private String nerLocationModelPath = "org/apache/tika/parser/geo/topic/en-ner-location.bin";
 	
 	public GeoParserRunner(String baseFolder, String resultFolder) throws Exception {
+		this(baseFolder, resultFolder, null);
+	}
+	
+	public GeoParserRunner(String baseFolder, String resultFolder, String markerFolder) throws Exception {
 		setBaseFolder(baseFolder);
 		setResultFolder(resultFolder);
+		setMarkerFolder(markerFolder);
 		initializeParser();
 	}
 	

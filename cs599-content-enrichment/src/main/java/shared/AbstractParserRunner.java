@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 public abstract class AbstractParserRunner {
 	private String baseFolder;
 	private String resultFolder;
+	private String markerFolder;
 	private boolean overwriteResult = false;
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 	
@@ -30,18 +31,32 @@ public abstract class AbstractParserRunner {
 		.filter(Files::isRegularFile)
 		.forEach(path -> {
 			File resultFile = getResultFile(path);
+			File markerFile = getMarkerFile(path);
 			
-			if (!overwriteResult && resultFile.exists()) {
+			if (markerFile != null && markerFile.exists() && !overwriteResult) {
 				return;
 			}
 			
 			try {
+				if (!overwriteResult && resultFile.exists()) {
+					return;
+				}
+			
 				boolean success = parse(path, resultFile);
 				if (success) {
 					successPath.add(getRelativePath(path));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			} finally {
+				if(markerFile != null && !markerFile.exists()) {
+					try {
+						markerFile.getParentFile().mkdirs();
+						markerFile.createNewFile();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 			
 		});
@@ -55,6 +70,13 @@ public abstract class AbstractParserRunner {
 	
 	protected File getResultFile(Path path, String suffix) {
 		return new File(resultFolder, getRelativePath(path) + suffix);
+	}
+	
+	protected File getMarkerFile(Path path) {
+		if (markerFolder != null) {
+			return new File(markerFolder, getRelativePath(path));
+		}
+		return null;
 	}
 	
 	protected abstract boolean parse(Path path, File resultFile) throws Exception;
@@ -79,6 +101,12 @@ public abstract class AbstractParserRunner {
 	}
 	public void setResultFolder(String resultFolder) {
 		this.resultFolder = resultFolder;
+	}
+	public String getMarkerFolder() {
+		return markerFolder;
+	}
+	public void setMarkerFolder(String markerFolder) {
+		this.markerFolder = markerFolder;
 	}
 	public boolean isOverwriteResult() {
 		return overwriteResult;
