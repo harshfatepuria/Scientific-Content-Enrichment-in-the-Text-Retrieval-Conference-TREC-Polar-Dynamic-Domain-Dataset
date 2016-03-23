@@ -18,7 +18,7 @@ import com.google.gson.GsonBuilder;
 public abstract class AbstractParserRunner {
 	private String baseFolder;
 	private String resultFolder;
-	private String markerFolder;
+	private String markerFile;
 	private boolean overwriteResult = false;
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 	
@@ -26,43 +26,62 @@ public abstract class AbstractParserRunner {
 	
 	public List<String> runParser() throws IOException, Exception {
 		List<String> successPath = new ArrayList<>();
+		final FileMarker fileMarker = markerFile == null ? null :  new FileMarker(new File(markerFile));
 		
-		Files.walk(Paths.get(baseFolder))
-		.filter(Files::isRegularFile)
-		.forEach(path -> {
-			File resultFile = getResultFile(path);
-			File markerFile = getMarkerFile(path);
-			String relativePath = getRelativePath(path);
-			
-			if (markerFile != null && markerFile.exists() && !overwriteResult) {
-				System.out.println("skip " + relativePath);
-				return;
-			}
-			
-			try {
-				if (overwriteResult || !resultFile.exists()) {
-					boolean success = parse(path, resultFile);
-					if (success) {
-						successPath.add(relativePath);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
-			
-			try {
-				if(markerFile != null && !markerFile.exists()) {
-					markerFile.getParentFile().mkdirs();
-					markerFile.createNewFile();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
-			
-			System.out.println("finish " + relativePath);
-			
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+	            try {
+	                Thread.sleep(200);
+	                System.out.println("Shouting down ...");
+
+	                if (fileMarker != null) {
+	                	fileMarker.closeWriter();
+	                	System.out.println("Marker:: " + fileMarker.getMarkSize() + " files marked");
+	                }
+
+	            } catch (InterruptedException e) {
+	                e.printStackTrace();
+	            }
+	        }
 		});
 		
+		try {
+			Files.walk(Paths.get(baseFolder))
+			.filter(Files::isRegularFile)
+			.forEach(path -> {
+				File resultFile = getResultFile(path);
+				String relativePath = getRelativePath(path);
+				
+				if (fileMarker != null && fileMarker.exists(relativePath) && !overwriteResult) {
+//					System.out.println("skip " + relativePath);
+					return;
+				}
+				
+				try {
+					if (overwriteResult || !resultFile.exists()) {
+						boolean success = parse(path, resultFile);
+						if (success) {
+							successPath.add(relativePath);
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				
+				try {
+					if(fileMarker != null && !fileMarker.exists(relativePath)) {
+						fileMarker.mark(relativePath);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				
+//				System.out.println("finish " + relativePath);
+				
+			});
+		} finally {
+			fileMarker.closeWriter();
+		}
 		return successPath;
 	}
 	
@@ -73,14 +92,14 @@ public abstract class AbstractParserRunner {
 	protected File getResultFile(Path path, String suffix) {
 		return new File(resultFolder, getRelativePath(path) + suffix);
 	}
-	
+	/*
 	protected File getMarkerFile(Path path) {
-		if (markerFolder != null) {
-			return new File(markerFolder, getRelativePath(path));
+		if (markerFile != null) {
+			return new File(markerFile, getRelativePath(path));
 		}
 		return null;
 	}
-	
+	*/
 	protected abstract boolean parse(Path path, File resultFile) throws Exception;
 	
 	protected InputStream getInputStream(Path path) throws FileNotFoundException {
@@ -104,11 +123,11 @@ public abstract class AbstractParserRunner {
 	public void setResultFolder(String resultFolder) {
 		this.resultFolder = resultFolder;
 	}
-	public String getMarkerFolder() {
-		return markerFolder;
+	public String getMarkerFile() {
+		return markerFile;
 	}
-	public void setMarkerFolder(String markerFolder) {
-		this.markerFolder = markerFolder;
+	public void setMarkerFile(String markerFile) {
+		this.markerFile = markerFile;
 	}
 	public boolean isOverwriteResult() {
 		return overwriteResult;

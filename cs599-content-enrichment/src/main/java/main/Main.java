@@ -1,10 +1,13 @@
 package main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,12 +21,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import geoparser.GeoParserRunner;
+import shared.FileMarker;
 import sweet.SweetParserRunner;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
 //			runSweet(args);
+//			createMarkerFile();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -81,9 +86,9 @@ public class Main {
 		System.out.println("run GeoParser");
 		String baseFolder = "C:\\cs599\\polar-fulldump";
 		String resultFolder = "C:\\cs599\\a2\\geo\\result";
-		String markerFolder = "C:\\cs599\\a2\\geo\\marker";
+		String markerFile = "C:\\cs599\\a2\\geo\\marker.txt";
 
-		GeoParserRunner geoParserRunner = new GeoParserRunner(baseFolder, resultFolder, markerFolder);
+		GeoParserRunner geoParserRunner = new GeoParserRunner(baseFolder, resultFolder, markerFile);
 		List<String> successPath = geoParserRunner.runParser();
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -99,9 +104,9 @@ public class Main {
 		System.out.println("run SweetParser");
 		String baseFolder = "C:\\cs599\\polar-fulldump";
 		String resultFolder = "C:\\cs599\\a2\\sweet\\result";
-		String markerFolder = "C:\\cs599\\a2\\sweet\\marker";
+		String markerFile = "C:\\cs599\\a2\\sweet\\marker.txt";
 		
-		SweetParserRunner sweetParserRunner = new SweetParserRunner(baseFolder, resultFolder, markerFolder);
+		SweetParserRunner sweetParserRunner = new SweetParserRunner(baseFolder, resultFolder, markerFile);
 		List<String> successPath = sweetParserRunner.runParser();
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -112,4 +117,20 @@ public class Main {
 		System.out.println("No of files: " + successPath.size());
 	}
 	
+	/*
+	private static void createMarkerFile() throws FileNotFoundException, IOException {
+		String markerFolder = "C:\\cs599\\a2\\sweet\\marker";
+		String markerFile = "C:\\cs599\\a2\\sweet\\marker.txt";
+		URI baseFolderUri = Paths.get(markerFolder).toUri();
+		
+		try(FileMarker marker = new FileMarker(new File(markerFile))) {
+			Files.walk(Paths.get(markerFolder))
+				.filter(Files::isRegularFile)
+				.forEach(path -> {
+					String relativePath = baseFolderUri.relativize(path.toUri()).toString();
+					marker.mark(relativePath);
+				});
+		}
+	}
+	*/
 }

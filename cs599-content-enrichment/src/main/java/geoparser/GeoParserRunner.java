@@ -31,10 +31,10 @@ public class GeoParserRunner extends AbstractParserRunner {
 		this(baseFolder, resultFolder, null);
 	}
 	
-	public GeoParserRunner(String baseFolder, String resultFolder, String markerFolder) throws Exception {
+	public GeoParserRunner(String baseFolder, String resultFolder, String markerFile) throws Exception {
 		setBaseFolder(baseFolder);
 		setResultFolder(resultFolder);
-		setMarkerFolder(markerFolder);
+		setMarkerFile(markerFile);
 		initializeParser();
 	}
 	

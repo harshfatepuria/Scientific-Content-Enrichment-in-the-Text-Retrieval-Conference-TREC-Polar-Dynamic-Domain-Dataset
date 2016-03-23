@@ -25,10 +25,10 @@ public class SweetParserRunner extends AbstractParserRunner {
 		this(baseFolder, resultFolder, null);
 	}
 	
-	public SweetParserRunner(String baseFolder, String resultFolder, String markerFolder) throws Exception {
+	public SweetParserRunner(String baseFolder, String resultFolder, String markerFile) throws Exception {
 		setBaseFolder(baseFolder);
 		setResultFolder(resultFolder);
-		setMarkerFolder(markerFolder);
+		setMarkerFile(markerFile);
 		initializeParser();
 	}
 	
