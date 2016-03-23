@@ -32,32 +32,34 @@ public abstract class AbstractParserRunner {
 		.forEach(path -> {
 			File resultFile = getResultFile(path);
 			File markerFile = getMarkerFile(path);
+			String relativePath = getRelativePath(path);
 			
 			if (markerFile != null && markerFile.exists() && !overwriteResult) {
+				System.out.println("skip " + relativePath);
 				return;
 			}
 			
 			try {
-				if (!overwriteResult && resultFile.exists()) {
-					return;
-				}
-			
-				boolean success = parse(path, resultFile);
-				if (success) {
-					successPath.add(getRelativePath(path));
+				if (overwriteResult || !resultFile.exists()) {
+					boolean success = parse(path, resultFile);
+					if (success) {
+						successPath.add(relativePath);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
+			} 
+			
+			try {
 				if(markerFile != null && !markerFile.exists()) {
-					try {
-						markerFile.getParentFile().mkdirs();
-						markerFile.createNewFile();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					markerFile.getParentFile().mkdirs();
+					markerFile.createNewFile();
 				}
-			}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+			
+			System.out.println("finish " + relativePath);
 			
 		});
 		
