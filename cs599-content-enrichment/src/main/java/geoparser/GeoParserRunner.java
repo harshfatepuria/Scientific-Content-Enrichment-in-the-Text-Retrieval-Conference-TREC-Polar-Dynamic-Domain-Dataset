@@ -1,6 +1,5 @@
 package geoparser;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,16 +20,12 @@ import org.apache.tika.sax.ToXMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import shared.AbstractParserRunner;
+import shared.PathMetadata;
 
-import shared.AbstractRunner;
-
-public class GeoParserRunner extends AbstractRunner {
+public class GeoParserRunner extends AbstractParserRunner {
 	private GeoParser geoParser;
 	private String nerLocationModelPath = "org/apache/tika/parser/geo/topic/en-ner-location.bin";
-
-	private Gson gson;
 	
 	public GeoParserRunner(String baseFolder, String resultFolder) throws Exception {
 		setBaseFolder(baseFolder);
@@ -43,7 +38,6 @@ public class GeoParserRunner extends AbstractRunner {
 		geoParser = new GeoParser();
         URL modelUrl = this.getClass().getResource(nerLocationModelPath);
         geoParser.initialize(modelUrl);
-        gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
 	
@@ -56,17 +50,14 @@ public class GeoParserRunner extends AbstractRunner {
 	protected boolean parse(Path path, File resultFile) throws Exception {
 		String relativePath = getRelativePath(path);
 		
-		Metadata metadata;
-		try (InputStream stream = getInputStream(path)){
-			metadata = parsePath(path);
-		}
+		Metadata metadata = parsePath(path);
 			
 		if (metadata.get("Geographic_NAME") == null) {
 			return false;
 		}
 		
-		GeoData geoData = new GeoData(relativePath, metadata);
-		String json = gson.toJson(geoData);
+		PathMetadata geoData = new PathMetadata(relativePath, metadata);
+		String json = getGson().toJson(geoData);
 		File jsonFile = getResultFile(path);
 		
 		jsonFile.getParentFile().mkdirs();

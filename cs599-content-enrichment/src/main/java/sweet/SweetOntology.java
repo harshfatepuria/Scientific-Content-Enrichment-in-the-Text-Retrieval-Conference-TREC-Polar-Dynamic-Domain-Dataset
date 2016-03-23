@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -22,6 +23,7 @@ import org.openrdf.sail.memory.MemoryStore;
 public class SweetOntology {
 
 	private static SweetOntology instance;
+	private static float defaultTolerance = 0.1f;
 	
 	public static SweetOntology getInstance() throws Exception {
 		if (instance == null) {
@@ -37,7 +39,7 @@ public class SweetOntology {
 		repository = new SailRepository(new MemoryStore());
 		repository.initialize();
 		loadOntology();
-		queryConcepts();
+		loadConcepts();
 	}
 	
 	private void loadOntology() throws URISyntaxException, IOException {
@@ -60,7 +62,7 @@ public class SweetOntology {
 	
 	private List<Concept> concepts;
 	
-	private void queryConcepts() {
+	private void loadConcepts() {
 		concepts = new ArrayList<>();
 		
 		List<BindingSet> results = Repositories.tupleQuery(repository, 
@@ -76,11 +78,25 @@ public class SweetOntology {
 			concepts.add(new Concept(value, value.substring(indexOfHash + 1).toLowerCase()));
 		});
 		
-		System.out.println(concepts.size());
+		System.out.println(concepts.size() + " concepts loaded");
+	}
+	
+	public Optional<MatchedConcept> queryFirst(String query) {
+		return queryFirst(query, defaultTolerance);
+	}
+	
+	public Optional<MatchedConcept> queryFirst(String query, Float tolerance) {
+		List<MatchedConcept> list = query(query, tolerance);
+		
+		if (list.size() > 0) {
+			return Optional.of(list.get(0));
+		} else {
+			return Optional.ofNullable(null);
+		}
 	}
 	
 	public List<MatchedConcept> query(String query) {
-		return query(query, 0.2f);
+		return query(query, defaultTolerance);
 	}
 	
 	public List<MatchedConcept> query(String query, Float tolerance) {
@@ -88,7 +104,7 @@ public class SweetOntology {
 		concepts.forEach(c -> {
 			Float distance = c.getDistanceFromQuery(query.trim().toLowerCase());
 			
-			if (distance < tolerance * c.queryName.length()) {
+			if (distance <= tolerance * c.queryName.length()) {
 				matched.add(new MatchedConcept(c.fullName, distance));
 			}
 		});

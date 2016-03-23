@@ -12,10 +12,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractRunner {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+public abstract class AbstractParserRunner {
 	private String baseFolder;
 	private String resultFolder;
 	private boolean overwriteResult = false;
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 	
 	private URI baseFolderUri;
 	
@@ -81,6 +85,12 @@ public abstract class AbstractRunner {
 	}
 	public void setOverwriteResult(boolean overwriteResult) {
 		this.overwriteResult = overwriteResult;
+	}
+	public Gson getGson() {
+		return gson;
+	}
+	public void setGson(Gson gson) {
+		this.gson = gson;
 	}
 	
 	

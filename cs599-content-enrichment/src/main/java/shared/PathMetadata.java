@@ -1,10 +1,9 @@
-package geoparser;
+package shared;
 
 import org.apache.tika.metadata.Metadata;
 
-public class GeoData {
-	
-	public GeoData(String path, Metadata metadata) {
+public class PathMetadata {
+	public PathMetadata(String path, Metadata metadata) {
 		this.path = path;
 		this.metadata = metadata;
 	}
@@ -24,6 +23,4 @@ public class GeoData {
 	public void setMetadata(Metadata metadata) {
 		this.metadata = metadata;
 	}
-	
-	
 }
