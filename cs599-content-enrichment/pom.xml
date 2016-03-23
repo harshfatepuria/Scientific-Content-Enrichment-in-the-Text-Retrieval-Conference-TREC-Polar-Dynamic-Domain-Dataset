@@ -29,6 +29,16 @@
   	  <artifactId>sesame-runtime</artifactId>
   	  <version>4.0.0</version>
 	</dependency>
+	<dependency>
+  		<groupId>com.upokecenter</groupId>
+  		<artifactId>cbor</artifactId>
+  		<version>2.4.1</version>
+	</dependency>
+	<dependency>
+  		<groupId>com.fasterxml.jackson.dataformat</groupId>
+  		<artifactId>jackson-dataformat-cbor</artifactId>
+  		<version>2.7.3</version>
+	</dependency>
   </dependencies>
   <properties>
   	<maven.compiler.source>1.8</maven.compiler.source>

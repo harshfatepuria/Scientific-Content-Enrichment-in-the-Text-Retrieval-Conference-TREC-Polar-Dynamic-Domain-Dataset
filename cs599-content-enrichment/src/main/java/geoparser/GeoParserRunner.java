@@ -1,18 +1,14 @@
 package geoparser;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.nio.file.Path;
+
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
@@ -20,6 +16,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.geo.topic.GeoParser;
+import org.apache.tika.sax.ToHTMLContentHandler;
 import org.apache.tika.sax.ToXMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -27,23 +24,17 @@ import org.xml.sax.SAXException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GeoParserRunner {
+import shared.AbstractRunner;
+
+public class GeoParserRunner extends AbstractRunner {
 	private GeoParser geoParser;
 	private String nerLocationModelPath = "org/apache/tika/parser/geo/topic/en-ner-location.bin";
-	
-	private String baseFolder;
-	private String resultFolder;
-	private Integer numberOfThread;
+
+	private Gson gson;
 	
 	public GeoParserRunner(String baseFolder, String resultFolder) throws Exception {
-		this(baseFolder, resultFolder, Runtime.getRuntime().availableProcessors());
-	}
-	
-	public GeoParserRunner(String baseFolder, String resultFolder, Integer numberOfThread) throws Exception {
-		this.baseFolder = baseFolder;
-		this.resultFolder = resultFolder;
-		this.numberOfThread = numberOfThread;
-		
+		setBaseFolder(baseFolder);
+		setResultFolder(resultFolder);
 		initializeParser();
 	}
 	
@@ -52,9 +43,75 @@ public class GeoParserRunner {
 		geoParser = new GeoParser();
         URL modelUrl = this.getClass().getResource(nerLocationModelPath);
         geoParser.initialize(modelUrl);
+        gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
-	public List<String> parse() throws IOException {
+	
+	@Override
+	protected File getResultFile(Path path) {
+		return super.getResultFile(path, ".geodata");
+	}
+	
+	@Override
+	protected boolean parse(Path path, File resultFile) throws Exception {
+		String relativePath = getRelativePath(path);
+		
+		Metadata metadata;
+		try (InputStream stream = getInputStream(path)){
+			metadata = parsePath(path);
+		}
+			
+		if (metadata.get("Geographic_NAME") == null) {
+			return false;
+		}
+		
+		GeoData geoData = new GeoData(relativePath, metadata);
+		String json = gson.toJson(geoData);
+		File jsonFile = getResultFile(path);
+		
+		jsonFile.getParentFile().mkdirs();
+		try(PrintWriter out = new PrintWriter(jsonFile)) {
+			out.print(json);
+		}
+		
+		return true;
+	}
+	
+	private Metadata parsePath(Path path) throws IOException, TikaException, SAXException {
+		ContentHandler handler = new ToXMLContentHandler();
+        Metadata metadata = new Metadata();
+        ParseContext context = new ParseContext();
+        
+        String text = getExtractedText(path);
+        
+        try(InputStream plainTextStream = IOUtils.toInputStream(text);){
+        	geoParser.parse(plainTextStream, handler, metadata, context);
+        }
+        
+		return metadata;
+	}
+	
+	private String getExtractedText(Path path) throws FileNotFoundException, IOException, SAXException, TikaException {
+		Tika tika = new Tika();
+		try (InputStream stream = getInputStream(path)) {
+			ToHTMLContentHandler contentHandler = new ToHTMLContentHandler();
+			Metadata metadata = new Metadata();
+			ParseContext parseContext = new ParseContext();
+			
+			try {
+				tika.getParser().parse(stream, contentHandler, metadata, parseContext);
+				return contentHandler.toString();
+			} catch (Exception e) {
+				try (InputStream stream2 = getInputStream(path)) {
+					return tika.parseToString(stream2);
+				}
+			}
+		}
+	}
+	
+	
+	/*
+	public List<String> parse1() throws IOException {
 		URI baseFolderUri = Paths.get(baseFolder).toUri();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		List<String> successPath = new ArrayList<>();
@@ -112,19 +169,5 @@ public class GeoParserRunner {
 		
 		return successPath;
 	}
-	
-	public Metadata parseFile(File file) throws IOException, TikaException, SAXException {
-		ContentHandler handler = new ToXMLContentHandler();
-        Metadata metadata = new Metadata();
-        ParseContext context = new ParseContext();
-        
-        Tika tika = new Tika();
-        String text = tika.parseToString(file);
-        
-        try(InputStream plainTextStream = IOUtils.toInputStream(text);){
-        	geoParser.parse(plainTextStream, handler, metadata, context);
-        }
-        
-		return metadata;
-	}
+	*/
 }
