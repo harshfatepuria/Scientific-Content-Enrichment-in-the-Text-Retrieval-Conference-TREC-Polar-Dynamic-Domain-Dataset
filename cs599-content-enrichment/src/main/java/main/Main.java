@@ -1,10 +1,18 @@
 package main;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.openrdf.rio.RDFFormat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,7 +24,6 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
 //			runSweet(args);
-//			test();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -103,4 +110,5 @@ public class Main {
 		}
 		System.out.println("No of files: " + successPath.size());
 	}
+	
 }

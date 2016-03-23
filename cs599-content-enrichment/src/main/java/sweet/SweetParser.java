@@ -25,37 +25,32 @@ public class SweetParser extends TikaHtmlResultBasedParser {
 	 * 
 	 */
 	private static final long serialVersionUID = -6928289547639589962L;
-
-	public SweetParser() throws Exception {
-		sweet = SweetOntology.getInstance();
-	}
 	
 	private SweetOntology sweet;
 	
-
+	public SweetParser() throws Exception {
+		sweet = SweetOntology.getInstance();
+	}
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
 		String text = getParsedHtmlText(stream);
 		List<String> entities = getEntitiesUsingNER(text);
-		
-		int count = 0;
+
 		for(String entity : entities) {
 			Optional<MatchedConcept> opConcept = sweet.queryFirst(entity);
 			
 			if(opConcept.isPresent()) {
 				MatchedConcept c = opConcept.get();
-				count++;
-				
-				metadata.add("sweet_entity_" + count, entity);
-				metadata.add("sweet_concept_" + count, c.concept);
+	
+				metadata.add("sweet_entity", entity);
+				metadata.add("sweet_concept", c.concept);
 			}
 		}
 	}
 	
 	private List<String> getEntitiesUsingNER(String text) {
-		CoreNLPNERecogniser nlpRecognizer = new CoreNLPNERecogniser(CoreNLPNERecogniser.NER_3CLASS_MODEL);
-		Map<String, Set<String>> nerResult = nlpRecognizer.recognise(text);
+		Map<String, Set<String>> nerResult = getNERecogniser().recognise(text);
 		Set<String> querySet = new HashSet<String>();;
 		
 		for(String key : nerResult.keySet()) {
@@ -64,5 +59,15 @@ public class SweetParser extends TikaHtmlResultBasedParser {
 		
 		return new ArrayList<String>(querySet);
 	}
+	
+	private static CoreNLPNERecogniser nlpRecognizer;
+	private CoreNLPNERecogniser getNERecogniser() {
+		if (nlpRecognizer == null) {
+			nlpRecognizer = new CoreNLPNERecogniser(CoreNLPNERecogniser.NER_3CLASS_MODEL);
+		}
+		
+		return nlpRecognizer;
+	}
+	
 
 }

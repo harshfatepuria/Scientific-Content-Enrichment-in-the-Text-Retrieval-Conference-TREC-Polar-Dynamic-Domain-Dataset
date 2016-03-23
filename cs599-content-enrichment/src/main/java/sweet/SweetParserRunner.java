@@ -61,7 +61,7 @@ public class SweetParserRunner extends AbstractParserRunner {
 			marker.createNewFile();
 		}
 		
-		if (metadata.get("sweet_entity_1") == null) {
+		if (metadata.get("sweet_concept") == null) {
 			return false;
 		}
 		

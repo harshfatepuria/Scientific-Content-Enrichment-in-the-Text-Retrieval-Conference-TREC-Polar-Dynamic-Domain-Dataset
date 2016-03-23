@@ -2,9 +2,11 @@ package sweet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,20 +44,65 @@ public class SweetOntology {
 		loadConcepts();
 	}
 	
+	private static String[] ontologyFiles = new String[] { "human.owl", "humanAgriculture.owl", "humanCommerce.owl",
+			"humanDecision.owl", "humanEnvirAssessment.owl", "humanEnvirConservation.owl", "humanEnvirControl.owl",
+			"humanEnvirStandards.owl", "humanJurisdiction.owl", "humanKnowledgeDomain.owl", "humanResearch.owl",
+			"humanTechReadiness.owl", "humanTransportation.owl", "matr.owl", "matrAerosol.owl", "matrAnimal.owl",
+			"matrBiomass.owl", "matrCompound.owl", "matrElement.owl", "matrElementalMolecule.owl", "matrEnergy.owl",
+			"matrEquipment.owl", "matrFacility.owl", "matrIndustrial.owl", "matrInstrument.owl", "matrIon.owl",
+			"matrIsotope.owl", "matrMicrobiota.owl", "matrMineral.owl", "matrNaturalResource.owl",
+			"matrOrganicCompound.owl", "matrParticle.owl", "matrPlant.owl", "matrRock.owl", "matrRockIgneous.owl",
+			"matrSediment.owl", "matrWater.owl", "phen.owl", "phenAtmo.owl", "phenAtmoCloud.owl", "phenAtmoFog.owl",
+			"phenAtmoFront.owl", "phenAtmoLightning.owl", "phenAtmoPrecipitation.owl", "phenAtmoPressure.owl",
+			"phenAtmoSky.owl", "phenAtmoTransport.owl", "phenAtmoWind.owl", "phenAtmoWindMesoscale.owl", "phenBiol.owl",
+			"phenCryo.owl", "phenCycle.owl", "phenCycleMaterial.owl", "phenEcology.owl", "phenElecMag.owl",
+			"phenEnergy.owl", "phenEnvirImpact.owl", "phenFluidDynamics.owl", "phenFluidInstability.owl",
+			"phenFluidTransport.owl", "phenGeol.owl", "phenGeolFault.owl", "phenGeolGeomorphology.owl",
+			"phenGeolSeismicity.owl", "phenGeolTectonic.owl", "phenGeolVolcano.owl", "phenHelio.owl", "phenHydro.owl",
+			"phenMixing.owl", "phenOcean.owl", "phenOceanCoastal.owl", "phenOceanDynamics.owl", "phenPlanetClimate.owl",
+			"phenReaction.owl", "phenSolid.owl", "phenStar.owl", "phenSystem.owl", "phenSystemComplexity.owl",
+			"phenWave.owl", "phenWaveNoise.owl", "proc.owl", "procChemical.owl", "procPhysical.owl",
+			"procStateChange.owl", "procWave.owl", "prop.owl", "propBinary.owl", "propCapacity.owl",
+			"propCategorical.owl", "propCharge.owl", "propChemical.owl", "propConductivity.owl", "propCount.owl",
+			"propDifference.owl", "propDiffusivity.owl", "propDimensionlessRatio.owl", "propEnergy.owl",
+			"propEnergyFlux.owl", "propFraction.owl", "propFunction.owl", "propIndex.owl", "propMass.owl",
+			"propMassFlux.owl", "propOrdinal.owl", "propPressure.owl", "propQuantity.owl", "propRotation.owl",
+			"propSpace.owl", "propSpaceDirection.owl", "propSpaceDistance.owl", "propSpaceHeight.owl",
+			"propSpaceLocation.owl", "propSpaceMultidimensional.owl", "propSpaceThickness.owl", "propSpeed.owl",
+			"propTemperature.owl", "propTemperatureGradient.owl", "propTime.owl", "propTimeFrequency.owl", "realm.owl",
+			"realmAstroBody.owl", "realmAstroHelio.owl", "realmAstroStar.owl", "realmAtmo.owl",
+			"realmAtmoBoundaryLayer.owl", "realmAtmoWeather.owl", "realmBiolBiome.owl", "realmClimateZone.owl",
+			"realmCryo.owl", "realmEarthReference.owl", "realmGeol.owl", "realmGeolBasin.owl",
+			"realmGeolConstituent.owl", "realmGeolContinental.owl", "realmGeolOceanic.owl", "realmGeolOrogen.owl",
+			"realmHydro.owl", "realmHydroBody.owl", "realmLandAeolian.owl", "realmLandCoastal.owl",
+			"realmLandFluvial.owl", "realmLandform.owl", "realmLandGlacial.owl", "realmLandOrographic.owl",
+			"realmLandProtected.owl", "realmLandTectonic.owl", "realmLandVolcanic.owl", "realmOcean.owl",
+			"realmOceanFeature.owl", "realmOceanFloor.owl", "realmRegion.owl", "realmSoil.owl", "rela.owl",
+			"relaChemical.owl", "relaClimate.owl", "relaHuman.owl", "relaMath.owl", "relaPhysical.owl",
+			"relaProvenance.owl", "relaSci.owl", "relaSpace.owl", "relaTime.owl", "repr.owl", "reprDataFormat.owl",
+			"reprDataModel.owl", "reprDataProduct.owl", "reprDataService.owl", "reprDataServiceAnalysis.owl",
+			"reprDataServiceGeospatial.owl", "reprDataServiceReduction.owl", "reprDataServiceValidation.owl",
+			"reprMath.owl", "reprMathFunction.owl", "reprMathFunctionOrthogonal.owl", "reprMathGraph.owl",
+			"reprMathOperation.owl", "reprMathSolution.owl", "reprMathStatistics.owl", "reprSciComponent.owl",
+			"reprSciFunction.owl", "reprSciLaw.owl", "reprSciMethodology.owl", "reprSciModel.owl",
+			"reprSciProvenance.owl", "reprSciUnits.owl", "reprSpace.owl", "reprSpaceCoordinate.owl",
+			"reprSpaceDirection.owl", "reprSpaceGeometry.owl", "reprSpaceGeometry3D.owl",
+			"reprSpaceReferenceSystem.owl", "reprTime.owl", "reprTimeDay.owl", "reprTimeSeason.owl", "state.owl",
+			"stateBiological.owl", "stateChemical.owl", "stateDataProcessing.owl", "stateEnergyFlux.owl",
+			"stateFluid.owl", "stateOrdinal.owl", "statePhysical.owl", "stateRealm.owl", "stateRole.owl",
+			"stateRoleBiological.owl", "stateRoleChemical.owl", "stateRoleGeographic.owl", "stateRoleImpact.owl",
+			"stateRoleRepresentative.owl", "stateRoleTrust.owl", "stateSolid.owl", "stateSpace.owl",
+			"stateSpaceConfiguration.owl", "stateSpaceScale.owl", "stateSpectralBand.owl", "stateSpectralLine.owl",
+			"stateStorm.owl", "stateSystem.owl", "stateThermodynamic.owl", "stateTime.owl", "stateTimeCycle.owl",
+			"stateTimeFrequency.owl", "stateTimeGeologic.owl", "stateVisibility.owl", "sweetAll.owl" };
+	
 	private void loadOntology() throws URISyntaxException, IOException {
 		try (RepositoryConnection conn = repository.getConnection()) {
-			File ontologyFolder = new File(this.getClass().getResource("/sweet/ontology").toURI());
-			
-			Files.walk(ontologyFolder.toPath())
-				.filter(Files::isRegularFile)
-				.filter(p -> "owl".equals(FilenameUtils.getExtension(p.toString())))
-				.forEach(path -> {
-					try {
-						conn.add(path.toFile(), "http://sweet.jpl.nasa.gov/2.3", RDFFormat.RDFXML);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				});
+			for(String fileName : ontologyFiles) {
+				try(InputStream is = this.getClass().getResourceAsStream("/sweet/ontology/" + fileName);) {
+					conn.add(is, "http://sweet.jpl.nasa.gov/2.3", RDFFormat.RDFXML);
+				}
+			}
 		}
 		System.out.println("Ontology loaded");
 	}
@@ -134,5 +181,19 @@ public class SweetOntology {
 		public float getDistanceFromQuery(String query) {
 			return StringUtils.getLevenshteinDistance(queryName, query);
 		}
+	}
+	
+	public static void printSweetOntologyFiles() throws URISyntaxException, IOException {
+		File ontologyFolder = new File(SweetOntology.class.getResource("/sweet/ontology").toURI());
+		List<String> files = new ArrayList<>();
+		
+		Files.walk(ontologyFolder.toPath())
+			.filter(Files::isRegularFile)
+			.filter(p -> "owl".equals(FilenameUtils.getExtension(p.toString())))
+			.forEach(path -> {
+				files.add("\"" + path.getFileName().toString() + "\"");
+			});
+		
+		System.out.println(Arrays.toString(files.toArray()));
 	}
 }
