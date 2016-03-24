@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -28,15 +29,22 @@ public abstract class AbstractParserRunner {
 		List<String> successPath = new ArrayList<>();
 		final FileMarker fileMarker = markerFile == null ? null :  new FileMarker(new File(markerFile));
 		
+		String[] lastProcess = new String[]{""};
+		int[] count = new int[]{0, 0};
+		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 	            try {
 	                Thread.sleep(200);
-	                System.out.println("Shouting down ...");
+	                System.out.println("Shutting down ...");
 
 	                if (fileMarker != null) {
 	                	fileMarker.closeWriter();
 	                	System.out.println("Marker:: " + fileMarker.getMarkSize() + " files marked");
+	                	
+	                	System.out.println("Runner:: " + count[0] + " files processed");
+	                	System.out.println("Runner:: " + count[1] + " files skipped");
+	                	System.out.println("Runner:: LastProcessingPath = " +lastProcess[0]);
 	                }
 
 	            } catch (InterruptedException e) {
@@ -45,43 +53,47 @@ public abstract class AbstractParserRunner {
 	        }
 		});
 		
-		try {
-			Files.walk(Paths.get(baseFolder))
-			.filter(Files::isRegularFile)
-			.forEach(path -> {
-				File resultFile = getResultFile(path);
-				String relativePath = getRelativePath(path);
-				
-				if (fileMarker != null && fileMarker.exists(relativePath) && !overwriteResult) {
-//					System.out.println("skip " + relativePath);
-					return;
+		Files.walk(Paths.get(baseFolder)).filter(Files::isRegularFile).forEach(path -> {
+			File resultFile = getResultFile(path);
+			String relativePath = getRelativePath(path);
+
+			lastProcess[0] = relativePath;
+			
+			if (count[0] % 2000 == 0 && count[0] != 0) {
+				System.out.println("Runner:: " + count[0] + " files processed");
+			}
+
+			if (fileMarker != null && fileMarker.exists(relativePath) && !overwriteResult) {
+				count[0]++;
+				count[1]++;
+				return;
+			}
+
+			try {
+				if (overwriteResult || !resultFile.exists()) {
+					boolean success = parse(path, resultFile);
+					if (success) {
+						successPath.add(relativePath);
+					}
 				}
-				
-				try {
-					if (overwriteResult || !resultFile.exists()) {
-						boolean success = parse(path, resultFile);
-						if (success) {
-							successPath.add(relativePath);
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-				
-				try {
-					if(fileMarker != null && !fileMarker.exists(relativePath)) {
-						fileMarker.mark(relativePath);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-				
-//				System.out.println("finish " + relativePath);
-				
-			});
-		} finally {
-			fileMarker.closeWriter();
-		}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			try {
+				if (fileMarker != null && !fileMarker.exists(relativePath)) {
+					fileMarker.mark(relativePath);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			count[0]++;
+		});
+		
+		
+		fileMarker.closeWriter();
+		
 		return successPath;
 	}
 	
@@ -92,14 +104,7 @@ public abstract class AbstractParserRunner {
 	protected File getResultFile(Path path, String suffix) {
 		return new File(resultFolder, getRelativePath(path) + suffix);
 	}
-	/*
-	protected File getMarkerFile(Path path) {
-		if (markerFile != null) {
-			return new File(markerFile, getRelativePath(path));
-		}
-		return null;
-	}
-	*/
+
 	protected abstract boolean parse(Path path, File resultFile) throws Exception;
 	
 	protected InputStream getInputStream(Path path) throws FileNotFoundException {

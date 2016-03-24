@@ -16,10 +16,10 @@ import org.apache.tika.parser.ner.corenlp.CoreNLPNERecogniser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import shared.TikaHtmlResultBasedParser;
+import shared.TikaExtractedTextBasedParser;
 import sweet.SweetOntology.MatchedConcept;
 
-public class SweetParser extends TikaHtmlResultBasedParser {
+public class SweetParser extends TikaExtractedTextBasedParser {
 
 	/**
 	 * 
@@ -34,7 +34,7 @@ public class SweetParser extends TikaHtmlResultBasedParser {
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
-		String text = getParsedHtmlText(stream);
+		String text = getParsedText(stream);
 		List<String> entities = getEntitiesUsingNER(text);
 
 		for(String entity : entities) {

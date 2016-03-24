@@ -44,7 +44,6 @@ public class FileMarker implements Closeable, AutoCloseable {
 	
 	public void closeWriter() {
 		if (printWriter != null) {
-			printWriter.flush();
 			printWriter.close();
 		}
 	}

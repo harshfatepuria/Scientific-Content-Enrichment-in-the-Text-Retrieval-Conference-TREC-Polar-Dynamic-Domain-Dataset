@@ -1,8 +1,10 @@
 package main;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,13 +17,21 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.ToTextContentHandler;
 import org.openrdf.rio.RDFFormat;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import geoparser.GeoParserRunner;
 import shared.FileMarker;
+import shared.TikaExtractedTextBasedParser;
 import sweet.SweetParserRunner;
 
 public class Main {
@@ -29,6 +39,9 @@ public class Main {
 		if (args.length == 0) {
 //			runSweet(args);
 //			createMarkerFile();
+//			runGeoParser(args);
+//			fixMarkerFile();
+//			testParser();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -131,6 +144,49 @@ public class Main {
 					marker.mark(relativePath);
 				});
 		}
+	}
+	*/
+	
+	/*
+	private static void fixMarkerFile() throws FileNotFoundException, IOException {
+		String resultFolder = "C:\\cs599\\a2\\geo\\result";
+		String markerFile = "C:\\cs599\\a2\\geo\\marker.txt";
+		String suffix = ".geodata";
+		URI baseFolderUri = Paths.get(resultFolder).toUri();
+		
+		try(FileMarker marker = new FileMarker(new File(markerFile))) {
+			Files.walk(Paths.get(resultFolder))
+				.filter(Files::isRegularFile)
+				.forEach(path -> {
+					String relativePath = baseFolderUri.relativize(path.toUri()).toString();
+					relativePath = relativePath.substring(0, relativePath.lastIndexOf(suffix));
+					marker.mark(relativePath);
+				});
+		}
+	}
+	*/
+	
+	/*
+	private static void testParser() throws IOException, SAXException, TikaException {
+		TikaExtractedTextBasedParser parser = new TikaExtractedTextBasedParser() {
+			
+			@Override
+			public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+					throws IOException, SAXException, TikaException {
+				System.out.println(getParsedText(stream));
+			}
+		};
+		
+		File f = new File("D:\\Picture\\2015-08 USA First\\LA\\01\\P8010140.JPG");
+		File sf = new File("C:\\cs599\\polar-fulldump\\at\\ac\\fwf\\www\\C3F748DE8F46EB7104603E734F5A38DFB9CE0777063223C7D2BB7FD22049D21B");
+		File bf = new File("C:\\cs599\\polar-fulldump\\edu\\colorado\\sidads\\2E749C4528B09021293F92BB123BCED24777DB57A8C60077C28233AE2EC303B5");
+		FileInputStream fis = new FileInputStream(bf);
+		System.out.println("start");
+		
+		parser.parse(fis, null, new Metadata());
+		
+//		Tika tika = new Tika();
+//		System.out.println(tika.parseToString(sf));
 	}
 	*/
 }
