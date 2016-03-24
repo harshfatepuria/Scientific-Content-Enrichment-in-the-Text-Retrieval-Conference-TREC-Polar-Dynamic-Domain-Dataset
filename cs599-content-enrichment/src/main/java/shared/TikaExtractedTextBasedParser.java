@@ -2,7 +2,6 @@ package shared;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -36,9 +35,9 @@ public abstract class TikaExtractedTextBasedParser extends AbstractParser {
 		if (metadata == null) {
 			metadata = new Metadata();
 		}
-		
-		Reader reader = tika.parse(stream, metadata);
+
 		StringBuffer sb = new StringBuffer();
+		String text = tika.parseToString(stream, metadata);
 		
 		/* Extract metadata */
 		for(String name : metadata.names()) {
@@ -52,15 +51,9 @@ public abstract class TikaExtractedTextBasedParser extends AbstractParser {
 			sb.append(System.getProperty("line.separator"));
 		}
 		
-		/* Extract content */
-		char[] arr = new char[8 * 1024];
-	    int numCharsRead;
-	    while ((numCharsRead = reader.read(arr, 0, arr.length)) != -1) {
-	    	sb.append(arr, 0, numCharsRead);
-	    }
-	    reader.close();
+		sb.append(text);
 		
-		return sb.toString().trim();
+		return sb.toString();
 	}
 	
 	public Tika getTika() {

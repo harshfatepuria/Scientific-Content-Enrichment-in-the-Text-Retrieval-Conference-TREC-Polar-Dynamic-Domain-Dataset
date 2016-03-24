@@ -180,13 +180,10 @@ public class Main {
 		File f = new File("D:\\Picture\\2015-08 USA First\\LA\\01\\P8010140.JPG");
 		File sf = new File("C:\\cs599\\polar-fulldump\\at\\ac\\fwf\\www\\C3F748DE8F46EB7104603E734F5A38DFB9CE0777063223C7D2BB7FD22049D21B");
 		File bf = new File("C:\\cs599\\polar-fulldump\\edu\\colorado\\sidads\\2E749C4528B09021293F92BB123BCED24777DB57A8C60077C28233AE2EC303B5");
-		FileInputStream fis = new FileInputStream(bf);
+		FileInputStream fis = new FileInputStream(f);
 		System.out.println("start");
 		
 		parser.parse(fis, null, new Metadata());
-		
-//		Tika tika = new Tika();
-//		System.out.println(tika.parseToString(sf));
 	}
 	*/
 }
