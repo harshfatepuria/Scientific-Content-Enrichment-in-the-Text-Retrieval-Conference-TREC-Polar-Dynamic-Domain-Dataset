@@ -15,7 +15,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import shared.AbstractParserRunner;
-import shared.PathMetadata;
 
 public class GeoParserRunner extends AbstractParserRunner {
 	private GeoWrapperParser geoParser;
@@ -52,8 +51,8 @@ public class GeoParserRunner extends AbstractParserRunner {
 			return false;
 		}
 		
-		PathMetadata geoData = new PathMetadata(relativePath, metadata);
-		String json = getGson().toJson(geoData);
+//		PathMetadata geoData = new PathMetadata(relativePath, metadata);
+		String json = getGson().toJson(metadata);
 		File jsonFile = getResultFile(path);
 		
 		jsonFile.getParentFile().mkdirs();

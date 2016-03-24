@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -28,9 +29,12 @@ import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import geoparser.GeoParserRunner;
 import shared.FileMarker;
+import shared.PathMetadata;
 import shared.TikaExtractedTextBasedParser;
 import sweet.SweetParserRunner;
 
@@ -42,6 +46,7 @@ public class Main {
 //			runGeoParser(args);
 //			fixMarkerFile();
 //			testParser();
+//			fixDataInFolder();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -184,6 +189,44 @@ public class Main {
 		System.out.println("start");
 		
 		parser.parse(fis, null, new Metadata());
+	}
+	*/
+	
+	/*
+	
+	private static void fixDataInFolder() throws IOException {
+		String resultFolder = "C:\\cs599\\a2\\sweet\\result";
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		List<String> notFixed = new ArrayList<>();
+		int[] count = new int[]{0};
+		
+		Files.walk(Paths.get(resultFolder)).filter(Files::isRegularFile).forEach(path -> {
+			try {
+				count[0]++;
+				fixData(gson, path.toFile());
+			} catch (Exception e) {
+				e.printStackTrace();
+				notFixed.add(path.toString());
+			}
+		});
+		
+		System.out.println(count[0] + " fixed");
+		notFixed.forEach(s -> System.out.println(s));
+	}
+	
+	private static void fixData(Gson gson, File f) throws JsonSyntaxException, JsonIOException, IOException {
+		PathMetadata pm = null;
+		try (FileReader fr = new FileReader(f)) {
+			pm = gson.fromJson(fr, PathMetadata.class);
+		}
+		f.delete();
+		
+		String json = gson.toJson(pm.getMetadata());
+		
+		try(PrintWriter out = new PrintWriter(f)) {
+			out.print(json);
+		}
 	}
 	*/
 }

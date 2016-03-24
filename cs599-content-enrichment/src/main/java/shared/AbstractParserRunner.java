@@ -21,7 +21,7 @@ public abstract class AbstractParserRunner {
 	private String resultFolder;
 	private String markerFile;
 	private boolean overwriteResult = false;
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	private URI baseFolderUri;
 	
@@ -54,6 +54,11 @@ public abstract class AbstractParserRunner {
 		});
 		
 		Files.walk(Paths.get(baseFolder)).filter(Files::isRegularFile).forEach(path -> {
+			/* temporary ignore large files  */
+			if (path.toFile().length() > (2*1024*1024)) {
+				return;
+			}
+			
 			File resultFile = getResultFile(path);
 			String relativePath = getRelativePath(path);
 

@@ -15,7 +15,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import shared.AbstractParserRunner;
-import shared.PathMetadata;
 
 public class SweetParserRunner extends AbstractParserRunner {
 	
@@ -43,15 +42,15 @@ public class SweetParserRunner extends AbstractParserRunner {
 	
 	@Override
 	protected boolean parse(Path path, File resultFile) throws Exception {
-		String relativePath = getRelativePath(path);
+//		String relativePath = getRelativePath(path);
 		Metadata metadata = parsePath(path);
 		
 		if (metadata.get("sweet_concept") == null) {
 			return false;
 		}
 		
-		PathMetadata sweetData = new PathMetadata(relativePath, metadata);
-		String json = getGson().toJson(sweetData);
+//		PathMetadata sweetData = new PathMetadata(relativePath, metadata);
+		String json = getGson().toJson(metadata);
 		File jsonFile = getResultFile(path);
 		
 		jsonFile.getParentFile().mkdirs();
