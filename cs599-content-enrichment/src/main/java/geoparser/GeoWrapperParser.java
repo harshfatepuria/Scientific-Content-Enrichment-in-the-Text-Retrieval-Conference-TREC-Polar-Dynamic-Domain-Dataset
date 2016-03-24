@@ -9,6 +9,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.geo.topic.GeoParser;
+import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -42,6 +43,10 @@ public class GeoWrapperParser extends TikaExtractedTextBasedParser {
 		try(InputStream plainTextStream = IOUtils.toInputStream(text);){
         	geoParser.parse(plainTextStream, handler, metadata, context);
         }
+		
+		XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
+        xhtml.startDocument();
+        xhtml.endDocument();
 	}
 
 }

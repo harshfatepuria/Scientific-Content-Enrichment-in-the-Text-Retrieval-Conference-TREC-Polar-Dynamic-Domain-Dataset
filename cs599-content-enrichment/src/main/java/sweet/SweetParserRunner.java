@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.sax.ToXMLContentHandler;
+import org.apache.tika.sax.ToHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -62,7 +62,7 @@ public class SweetParserRunner extends AbstractParserRunner {
 	}
 	
 	private Metadata parsePath(Path path) throws IOException, TikaException, SAXException {
-		ContentHandler handler = new ToXMLContentHandler();
+		ContentHandler handler = new ToHTMLContentHandler();
         Metadata metadata = new Metadata();
         ParseContext context = new ParseContext();
         

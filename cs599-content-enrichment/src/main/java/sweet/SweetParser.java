@@ -13,6 +13,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.ner.corenlp.CoreNLPNERecogniser;
+import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -47,6 +48,10 @@ public class SweetParser extends TikaExtractedTextBasedParser {
 				metadata.add("sweet_concept", c.concept);
 			}
 		}
+		
+		XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
+        xhtml.startDocument();
+        xhtml.endDocument();
 	}
 	
 	private List<String> getEntitiesUsingNER(String text) {
