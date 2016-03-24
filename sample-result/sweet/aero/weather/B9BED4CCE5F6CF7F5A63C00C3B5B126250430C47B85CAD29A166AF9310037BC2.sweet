@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "sweet_concept": [
+      "http://sweet.jpl.nasa.gov/2.3/reprSpaceCoordinate.owl#Longitude",
+      "http://sweet.jpl.nasa.gov/2.3/humanTransportation.owl#FAA"
+    ],
+    "sweet_entity": [
+      "Longitude",
+      "FAA"
+    ]
+  }
+}

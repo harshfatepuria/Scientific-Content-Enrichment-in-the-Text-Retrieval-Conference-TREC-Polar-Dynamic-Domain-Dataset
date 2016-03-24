@@ -1,25 +1,22 @@
 {
-  "path": "aero/weather/971A20991E24BD50431C290E809D7813D77CD5B026FB7F6A82F77933AC192B3E",
   "metadata": {
-    "metadata": {
-      "Geographic_LONGITUDE": [
-        "43.93667"
-      ],
-      "Geographic_NAME": [
-        "Java"
-      ],
-      "Optional_LATITUDE1": [
-        "36.17497"
-      ],
-      "Optional_LONGITUDE1": [
-        "-115.13722"
-      ],
-      "Geographic_LATITUDE": [
-        "42.39972"
-      ],
-      "Optional_NAME1": [
-        "Las Vegas"
-      ]
-    }
+    "Geographic_LONGITUDE": [
+      "43.93667"
+    ],
+    "Geographic_NAME": [
+      "Java"
+    ],
+    "Optional_LATITUDE1": [
+      "36.17497"
+    ],
+    "Optional_LONGITUDE1": [
+      "-115.13722"
+    ],
+    "Geographic_LATITUDE": [
+      "42.39972"
+    ],
+    "Optional_NAME1": [
+      "Las Vegas"
+    ]
   }
 }

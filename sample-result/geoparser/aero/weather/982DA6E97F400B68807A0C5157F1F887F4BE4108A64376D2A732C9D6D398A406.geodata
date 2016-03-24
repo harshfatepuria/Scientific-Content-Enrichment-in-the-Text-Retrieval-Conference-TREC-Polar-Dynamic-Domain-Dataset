@@ -1,16 +1,13 @@
 {
-  "path": "aero/weather/982DA6E97F400B68807A0C5157F1F887F4BE4108A64376D2A732C9D6D398A406",
   "metadata": {
-    "metadata": {
-      "Geographic_LONGITUDE": [
-        "-86.73611"
-      ],
-      "Geographic_NAME": [
-        "Medium United Methodist Church"
-      ],
-      "Geographic_LATITUDE": [
-        "35.26341"
-      ]
-    }
+    "Geographic_LONGITUDE": [
+      "-86.73611"
+    ],
+    "Geographic_NAME": [
+      "Medium United Methodist Church"
+    ],
+    "Geographic_LATITUDE": [
+      "35.26341"
+    ]
   }
 }

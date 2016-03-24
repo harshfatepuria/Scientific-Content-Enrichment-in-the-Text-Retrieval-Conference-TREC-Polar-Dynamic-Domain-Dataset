@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "sweet_concept": [
+      "http://sweet.jpl.nasa.gov/2.3/matrSediment.owl#Boulder",
+      "http://sweet.jpl.nasa.gov/2.3/matrCompound.owl#CO"
+    ],
+    "sweet_entity": [
+      "Boulder",
+      "CO"
+    ]
+  }
+}
