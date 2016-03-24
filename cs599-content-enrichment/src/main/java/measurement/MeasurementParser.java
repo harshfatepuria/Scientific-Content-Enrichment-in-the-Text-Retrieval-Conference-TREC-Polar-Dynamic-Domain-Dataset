@@ -29,7 +29,7 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
-		String text = "This place is twenty-two km long and 2,400 metre high. \n Its average temperature is 60 F but sometimes can be up to 37.5 degree celcius. It is zero tolerance.";
+		String text = "This place is twenty-two km long and 2,400 metre high. \n Its average temperature is 60 F but sometimes can be up to 37.5 degree celcius. It is 0 tolerance.";
 		
 		List<String> tokens = tokenize(text);
 		List<Number3Gram> nums = extractNumbers(tokens);
@@ -59,34 +59,45 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		
 		
 		if (tokens.size() == 1) {
-			String num = QuantifiableEntityNormalizer.normalizedNumberString(tokens.get(0), "", null);
-			if (isValidNumber(num)) {
-				result.add(new Number3Gram(num, "", ""));
+			BigDecimal num = getNumber(tokens.get(0), "");
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(0), "", ""));
 			}
 		} else if (tokens.size() >= 1) {
-			String num = QuantifiableEntityNormalizer.normalizedNumberString(tokens.get(0), tokens.get(1), null);
-			if (isValidNumber(num)) {
-				result.add(new Number3Gram(num, "", tokens.get(1)));
+			BigDecimal num = getNumber(tokens.get(0), tokens.get(1));
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(0), "", tokens.get(1)));
 			}
 			
 			for(int i = 1; i < tokens.size() - 1; i++) {
-				num = QuantifiableEntityNormalizer.normalizedNumberString(tokens.get(i), tokens.get(i+1), null);
-				if (isValidNumber(num)) {
-					result.add(new Number3Gram(num, tokens.get(i-1), tokens.get(i+1)));
+				num = getNumber(tokens.get(i), tokens.get(i+1));
+				if (num != null) {
+					result.add(new Number3Gram(num, tokens.get(i), tokens.get(i-1), tokens.get(i+1)));
 				}
 			}
 			
-			num = QuantifiableEntityNormalizer.normalizedNumberString(tokens.get(tokens.size()-1), "", null);
-			if (isValidNumber(num)) {
-				result.add(new Number3Gram(num, tokens.get(tokens.size()-2), ""));
+			num = getNumber(tokens.get(tokens.size()-1), "");
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(tokens.size()-1), tokens.get(tokens.size()-2), ""));
 			}
 		}
 		
 		return result;
 	}
 	
-	private boolean isValidNumber(String num) {
-		return num != null && !"0.0".equals(num);
+	private BigDecimal getNumber(String word, String nextWord) {
+		try {
+			return new BigDecimal(word);
+		} catch(Exception e) {
+			
+		}
+		
+		String num = QuantifiableEntityNormalizer.normalizedNumberString(word, nextWord, null);
+		if (num == null || "0.0".equals(num)) {
+			return null;
+		}
+		
+		return new BigDecimal(num);
 	}
 	
 	private class Number3Gram {
@@ -95,11 +106,11 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		String numberString;
 		String post;
 		
-		Number3Gram(String numberString, String pre, String post) {
-			this.numberString = numberString;
+		Number3Gram(BigDecimal number, String actualNumberString, String pre, String post) {
+			this.numberString = actualNumberString;
 			this.pre = pre;
 			this.post = post;
-			number = new BigDecimal(numberString);
+			this.number = number;
 		}
 		
 		@Override
