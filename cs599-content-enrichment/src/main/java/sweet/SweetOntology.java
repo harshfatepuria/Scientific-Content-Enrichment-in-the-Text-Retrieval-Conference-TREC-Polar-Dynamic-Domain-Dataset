@@ -13,8 +13,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.sail.SailRepository;
@@ -157,6 +160,31 @@ public class SweetOntology {
 		});
 		
 		return matched.stream().sorted((a, b) -> Float.compare(a.distance, b.distance)).collect(Collectors.toList());
+	}
+	
+	public List<BindingSet> queryTriples(String concept) {
+		ValueFactory factory = repository.getValueFactory();
+		
+		try (RepositoryConnection con = repository.getConnection()) {
+			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?r ?o WHERE {{?s ?r ?o} FILTER( (str(?s) = str(?c)) || (str(?o) = str(?c)) )}");
+			query.setBinding("c", factory.createLiteral(concept));
+			
+			TupleQueryResult queryResults = query.evaluate();
+			return QueryResults.asList(queryResults);
+		}
+	}
+	
+	public List<BindingSet> queryRelationalConcept(String relation, String concept) {
+		ValueFactory factory = repository.getValueFactory();
+		
+		try (RepositoryConnection con = repository.getConnection()) {
+			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?r ?o WHERE {{?s ?r ?o} FILTER( (str(?o) = str(?io)) && (str(?r) = str(?ir)) )}");
+			query.setBinding("ir", factory.createLiteral(relation));
+			query.setBinding("io", factory.createLiteral(concept));
+			
+			TupleQueryResult queryResults = query.evaluate();
+			return QueryResults.asList(queryResults);
+		}
 	}
 	
 	public class MatchedConcept {

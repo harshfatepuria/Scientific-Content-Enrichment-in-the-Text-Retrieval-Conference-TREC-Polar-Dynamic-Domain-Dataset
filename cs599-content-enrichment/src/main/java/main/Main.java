@@ -22,7 +22,9 @@ import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.sax.ToTextContentHandler;
+import org.openrdf.query.BindingSet;
 import org.openrdf.rio.RDFFormat;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -33,9 +35,11 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import geoparser.GeoParserRunner;
+import measurement.MeasurementParser;
 import shared.FileMarker;
 import shared.PathMetadata;
 import shared.TikaExtractedTextBasedParser;
+import sweet.SweetOntology;
 import sweet.SweetParserRunner;
 
 public class Main {
@@ -47,6 +51,7 @@ public class Main {
 //			fixMarkerFile();
 //			testParser();
 //			fixDataInFolder();
+			testMeasurement();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -229,4 +234,28 @@ public class Main {
 		}
 	}
 	*/
+	
+	private static void testMeasurement() throws Exception {
+//		SweetOntology sweet = SweetOntology.getInstance();
+//		String query = "ComplexUnit";
+//		String concept = sweet.queryFirst(query).get().concept;
+//		System.out.println(concept);
+		
+		String relaType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+		String conceptPrefix = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Prefix";
+		String conceptUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Unit";
+		String conceptBaseUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#BaseUnit";
+		String conceptComplexUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#ComplexUnit";
+		
+		
+//		List<BindingSet> result = sweet.queryTriples(concept);
+//		List<BindingSet> result = sweet.queryRelationalConcept(relaType, conceptPrefix);
+		
+//		for(BindingSet bs : result) {
+//			System.out.println(bs.getValue("s") + " - " + bs.getValue("r") + " - " + bs.getValue("o"));
+//		}
+		
+		MeasurementParser parser = new MeasurementParser();
+		parser.parse(null, null, null);
+	}
 }
