@@ -1,17 +1,11 @@
 package GrobidParsing;
 
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-
 
 
 public class GetTEI {
@@ -21,10 +15,11 @@ public class GetTEI {
     int emptyAbstract=0,i;
     String tei="";
     int flag=0;
+    int count=0;
     try {
       PrintWriter writer = new PrintWriter("/Users/harshfatepuria/Desktop/599/HW2/FINAL FILES/grobid_output.json", "UTF-8");
       
-       writer.println("{");
+       writer.println("{\n\"TEIAndRelatedData\":[");
       
             // read the json file
             FileReader reader = new FileReader("/Users/harshfatepuria/Desktop/599/HW2/FINAL FILES/application%2Fpdf.json");
@@ -52,16 +47,15 @@ public class GetTEI {
                 JSONObject jsonTei = (JSONObject) jsonObject2.get("TEI");
                 JSONObject teiHeader = (JSONObject) jsonTei.get("teiHeader");
                 JSONObject profileDesc = (JSONObject) teiHeader.get("profileDesc");
-             String getAbstract =  profileDesc.get("abstract").toString();
-             //System.out.println(getAbstract.toString());
+                String getAbstract =  profileDesc.get("abstract").toString();
                 if(getAbstract.toString().equals("")==false){
-                  //System.out.println("\""+lang.get(i).toString()+"\":");
-                  //System.out.println(tei+",\n");
                   if(flag==1){
                     writer.println(",");
                     flag=0;
                   }
-                  writer.print("\""+lang.get(i).toString()+"\":"+tei);
+                  count++;
+                  tei=tei.trim();
+                  writer.print("{\"filePath\": \""+lang.get(i).toString()+"\","+tei.substring(1,tei.length()-1)+"}");
                   flag=1;
                }
                 else
@@ -80,27 +74,10 @@ public class GetTEI {
             
            
             System.out.println("\n\n\nNumber of papers with empty abstract: "+emptyAbstract);
-            
-           
-        writer.println("\n}");
+        writer.println("\n],\n\"count\": "+count +"\n}");
         writer.close();
             
     } 
-        catch (FileNotFoundException ex) {
-//            ex.printStackTrace();
-          ;
-        } 
-        catch (IOException ex) {
-           // ex.printStackTrace();
-          ;
-        } 
-        catch (ParseException ex) {
-            //ex.printStackTrace();
-          ;
-        } catch (NullPointerException ex) {
-            //ex.printStackTrace();
-          ;
-        }
     catch(Exception e){
         ;
       }
