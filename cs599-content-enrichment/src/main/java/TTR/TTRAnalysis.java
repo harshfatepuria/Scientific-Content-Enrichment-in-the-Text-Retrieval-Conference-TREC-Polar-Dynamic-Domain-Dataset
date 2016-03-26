@@ -2,6 +2,7 @@ package TTR;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,15 +20,21 @@ import java.util.regex.Pattern;
 public class TTRAnalysis
 {
 	public static String parseBodyToHTML(String filePath) throws IOException, SAXException, TikaException {
+		try (InputStream stream =new FileInputStream(new File(filePath))) {
+			return parseBodyToHTML(stream);
+		}
+	}
+	
+	public static String parseBodyToHTML(InputStream stream) throws IOException, SAXException, TikaException {
 //	    ContentHandler handler = new BodyContentHandler(new ToXMLContentHandler());
 	    ContentHandler handler = new ToXMLContentHandler();
 		 
 	    AutoDetectParser parser = new AutoDetectParser();
 	    Metadata metadata = new Metadata();
-	    try (InputStream stream =new FileInputStream(new File(filePath))) {
-	        parser.parse(stream, handler, metadata);
-	        return handler.toString();
-	    }
+	    
+	    parser.parse(stream, handler, metadata);
+	    return handler.toString();
+	    
 //	    catch(Exception e){System.out.println(e);}
 //		return " ";
 	}
@@ -57,13 +64,19 @@ public class TTRAnalysis
 		return ratio;
 	}
 	
-	public static String getRelevantText(String filePath) throws IOException, SAXException, TikaException
+	public static String getRelevantText(String filePath) throws IOException, SAXException, TikaException {
+		try (InputStream stream =new FileInputStream(new File(filePath))) {
+			return getRelevantText(stream);
+		}
+	}
+	
+	public static String getRelevantText(InputStream stream) throws IOException, SAXException, TikaException
 	{
 		int i,j;
 		float total=0,avg=0;
 		float TTRArray[];
 		StringBuilder builder = new StringBuilder();
-		String s=parseBodyToHTML(filePath);
+		String s=parseBodyToHTML(stream);
 		s=s.trim();
 		
 		String[] str_array = s.split("\n");
