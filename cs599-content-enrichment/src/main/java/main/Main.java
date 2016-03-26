@@ -36,6 +36,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import TTR.TTRAnalysis;
+import edu.stanford.nlp.ie.NumberNormalizer;
 import edu.stanford.nlp.ie.QuantifiableEntityNormalizer;
 import geoparser.GeoParserRunner;
 import measurement.MeasurementParser;
@@ -50,6 +51,8 @@ import sweet.SweetParserRunner;
 public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
+//			runMeasurement(args);
+//			testMeasurement();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -298,7 +301,7 @@ public class Main {
 	}
 	*/
 	
-	/*
+	
 	private static void testMeasurement() throws Exception {
 //		SweetOntology sweet = SweetOntology.getInstance();
 //		String query = "ComplexUnit";
@@ -323,8 +326,15 @@ public class Main {
 //		}
 //		System.out.println(result.size());
 		
-		System.out.println(QuantifiableEntityNormalizer.normalizedNumberString("four", "main", null));
-		System.out.println(QuantifiableEntityNormalizer.normalizedNumberString("light", "of", null));
+//		System.out.println(QuantifiableEntityNormalizer.normalizedNumberString("four", "main", null));
+//		System.out.println(QuantifiableEntityNormalizer.normalizedNumberString("light", "of", null));
+		
+		System.out.println(NumberNormalizer.wordToNumber("four"));
+//		System.out.println(NumberNormalizer.wordToNumber("our"));
+//		System.out.println(NumberNormalizer.wordToNumber("dog"));
+		System.out.println(NumberNormalizer.wordToNumber("twenty two"));
+		System.out.println(NumberNormalizer.wordToNumber("twenty-two"));
+		
 		
 		String path = "C:\\cs599\\polar-fulldump\\gov\\biometrics\\www\\58630A1D48D40194D638346C2BDA3FAAA84669812BEDE7168620C8AA4517E90F";
 //		String text = TTRAnalysis.getRelevantText(path);
@@ -339,15 +349,15 @@ public class Main {
 //		System.out.println(handler.toString());
 //		System.out.println(text.length() == handler.toString().length());
 		
-		MeasurementParser measurementParser = new MeasurementParser();
-		try (InputStream stream = new FileInputStream(path)) {
-			measurementParser.parse(stream, handler, metadata);
-		}
-		
-		System.out.println(metadata);
+//		MeasurementParser measurementParser = new MeasurementParser();
+//		try (InputStream stream = new FileInputStream(path)) {
+//			measurementParser.parse(stream, handler, metadata);
+//		}
+//		
+//		System.out.println(metadata);
 		
 //		MeasurementParser parser = new MeasurementParser();
 //		parser.parse(null, null, null);
 	}
-	*/
+	
 }

@@ -5,12 +5,9 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -19,7 +16,7 @@ import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import edu.stanford.nlp.ie.QuantifiableEntityNormalizer;
+import edu.stanford.nlp.ie.NumberNormalizer;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import shared.TikaExtractedTextBasedParser;
@@ -41,17 +38,22 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
-//		String sampleText = "This place is twenty-two k.m. long and 2,400 metra high. \n Its average temperature is 60 degree F but sometimes can be up to 37.5 degree celsius. It is 0 tolerance.";
+//		String sampleText = "This place is twenty two k.m. long and 2,400 metra high. \n Its average temperature is 60 degree F but sometimes can be up to 37.5 degree celsius. It is 0 tolerance.";
+//		String text = sampleText;
 		String text = getTextFromTagRatioParser(stream, metadata, context);
+		
 		
 		if (text != null && text.length() > 0) {
 			List<String> tokens = tokenize(text);
 			List<BigDecimal> nums = extractNumbers(tokens);
+			
+			List<StringAndNumber> fixed = fixAdjacentNumber(tokens, nums);
+			tokens = fixed.stream().map(StringAndNumber::getString).collect(Collectors.toList());
+			nums = fixed.stream().map(StringAndNumber::getNumber).collect(Collectors.toList());
+			
 			List<Number3Gram> extractedTuples = extractNumbers3Gram(tokens, nums);
 			
 			for(Number3Gram n3gram : extractedTuples) {
-				
-				
 				String extractedMeasurement = sweet.matchMeasurement(n3gram.post1, n3gram.post2);
 				if(extractedMeasurement != null) {
 					metadata.add("measurement_extracted", n3gram.number.toString() + " " + extractedMeasurement);
@@ -107,6 +109,36 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return result;
 	}
 	
+	private List<StringAndNumber> fixAdjacentNumber(List<String> tokens, List<BigDecimal> nums) {
+		int i = 0;
+		List<StringAndNumber> result = new ArrayList<>();
+		while(i < tokens.size()) {
+			if (nums.get(i) == null) {
+				result.add(new StringAndNumber(tokens.get(i) , null));
+				i++;
+			} else {
+				String numString = tokens.get(i);
+				BigDecimal num = nums.get(i);
+				boolean extended = false;
+				
+				i++;
+				while(i < nums.size() && nums.get(i) != null) {
+					numString += " " + tokens.get(i);
+					extended = true;
+					i++;
+				}
+				
+				if (extended) {
+					num = convertToNumber(numString, i < nums.size() -1 ? tokens.get(i) : "");
+				}
+				
+				result.add(new StringAndNumber(numString, num));
+			}
+		}
+		
+		return result;
+	}
+	
 	private List<Number3Gram> extractNumbers3Gram(List<String> tokens, List<BigDecimal> nums) {
 		List<Number3Gram> result = new ArrayList<>();
 		
@@ -152,6 +184,20 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return result;
 	}
 	
+	private BigDecimal convertToNumber(String word) {
+		try {
+			Number n = NumberNormalizer.wordToNumber(word);
+			return new BigDecimal(n.toString());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private BigDecimal convertToNumber(String word, String nextWord) {
+		return convertToNumber(word);
+	}
+	
+	/*
 	private Set<String> confuseWords = new HashSet<>(Arrays.asList("for", "our", "height", "file"));
 	private BigDecimal convertToNumber(String word, String nextWord) {
 		
@@ -184,9 +230,15 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 			return null;
 		}
 		
-		return new BigDecimal(num);
+		try {
+			return new BigDecimal(num);
+		} catch (Exception e) {
+			System.out.println(num);
+			e.printStackTrace();
+			return null;
+		}
 	}
-	
+	*/
 	
 	private class Number3Gram {
 		BigDecimal number;
@@ -207,4 +259,35 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		}
 	}
 
+	private class StringAndNumber {
+		String string;
+		BigDecimal number;
+		
+		public StringAndNumber(String s, BigDecimal num) {
+			this.string = s;
+			this.number = num;
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("%s %s", string, number == null ? "null" : number.toString());
+		}
+
+		public String getString() {
+			return string;
+		}
+
+		public void setString(String string) {
+			this.string = string;
+		}
+
+		public BigDecimal getNumber() {
+			return number;
+		}
+
+		public void setNumber(BigDecimal number) {
+			this.number = number;
+		}
+		
+	}
 }
