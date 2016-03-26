@@ -42,14 +42,15 @@ public class SweetParserRunner extends AbstractParserRunner {
 	
 	@Override
 	protected boolean parse(Path path, File resultFile) throws Exception {
-//		String relativePath = getRelativePath(path);
+		String relativePath = getRelativePath(path);
 		Metadata metadata = parsePath(path);
 		
 		if (metadata.get("sweet_concept") == null) {
 			return false;
 		}
 		
-//		PathMetadata sweetData = new PathMetadata(relativePath, metadata);
+		metadata.add("filePath", relativePath);
+		
 		String json = getGson().toJson(metadata);
 		File jsonFile = getResultFile(path);
 		

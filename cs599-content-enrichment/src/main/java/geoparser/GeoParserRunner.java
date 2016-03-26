@@ -43,15 +43,14 @@ public class GeoParserRunner extends AbstractParserRunner {
 	
 	@Override
 	protected boolean parse(Path path, File resultFile) throws Exception {
-//		String relativePath = getRelativePath(path);
-		
+		String relativePath = getRelativePath(path);
 		Metadata metadata = parsePath(path);
 			
 		if (metadata.get("Geographic_NAME") == null) {
 			return false;
 		}
 		
-//		PathMetadata geoData = new PathMetadata(relativePath, metadata);
+		metadata.add("filePath", relativePath);
 		String json = getGson().toJson(metadata);
 		File jsonFile = getResultFile(path);
 		
