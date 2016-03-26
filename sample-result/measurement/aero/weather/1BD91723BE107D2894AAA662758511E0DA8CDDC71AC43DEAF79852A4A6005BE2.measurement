@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "measurement_verifyDump": [
+      "a single interactive | 1",
+      "a flight level | 1",
+      "a flight path | 1",
+      "an interactive display | 1",
+      "a data format | 1",
+      "a contraction of | 1",
+      "5 minutes and | 5 | minute",
+      "a data overlay | 1"
+    ],
+    "measurement_extracted": [
+      "5 minute"
+    ],
+    "filePath": [
+      "aero/weather/1BD91723BE107D2894AAA662758511E0DA8CDDC71AC43DEAF79852A4A6005BE2"
+    ]
+  }
+}

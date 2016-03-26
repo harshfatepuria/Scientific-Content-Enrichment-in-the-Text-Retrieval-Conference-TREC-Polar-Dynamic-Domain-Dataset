@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "measurement_verifyDump": [
+      "a single interactive | 1",
+      "a flight level | 1",
+      "a flight path | 1",
+      "an interactive display | 1",
+      "20 , 2014 | 20",
+      "2014 Dear ADDS | 2014",
+      "a plan for | 1",
+      "2014 . Under | 2014",
+      "2 later this | 2",
+      "6 months , | 6 | month",
+      "15 years . | 15 | year",
+      "first came online | 1"
+    ],
+    "measurement_extracted": [
+      "6 month",
+      "15 year"
+    ],
+    "filePath": [
+      "aero/weather/6D9DBC985314284DB974E50B2588A295637333D464D797FBC4C710BCB4E0DF47"
+    ]
+  }
+}
