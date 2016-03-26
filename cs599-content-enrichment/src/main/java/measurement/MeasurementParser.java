@@ -5,11 +5,16 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -18,28 +23,56 @@ import edu.stanford.nlp.ie.QuantifiableEntityNormalizer;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import shared.TikaExtractedTextBasedParser;
+import sweet.SweetOntology;
 
 public class MeasurementParser extends TikaExtractedTextBasedParser {
 
 	/**
 	 * 
 	 */
+	private SweetOntology sweet;
+	
+	public MeasurementParser() throws Exception {
+		sweet = SweetOntology.getInstance();
+	}
+	
 	private static final long serialVersionUID = 664156334712200733L;
 
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
-		String text = "This place is twenty-two km long and 2,400 metre high. \n Its average temperature is 60 F but sometimes can be up to 37.5 degree celcius. It is 0 tolerance.";
+//		String sampleText = "This place is twenty-two k.m. long and 2,400 metra high. \n Its average temperature is 60 degree F but sometimes can be up to 37.5 degree celsius. It is 0 tolerance.";
+		String text = getTextFromTagRatioParser(stream, metadata, context);
 		
-		List<String> tokens = tokenize(text);
-		List<BigDecimal> nums = extractNumbers(tokens);
-		List<Number3Gram> extractedTuples = extractNumbers3Gram(tokens, nums);
-		
-		extractedTuples.forEach(n -> System.out.println(n));
+		if (text != null && text.length() > 0) {
+			List<String> tokens = tokenize(text);
+			List<BigDecimal> nums = extractNumbers(tokens);
+			List<Number3Gram> extractedTuples = extractNumbers3Gram(tokens, nums);
+			
+			for(Number3Gram n3gram : extractedTuples) {
+				
+				
+				String extractedMeasurement = sweet.matchMeasurement(n3gram.post1, n3gram.post2);
+				if(extractedMeasurement != null) {
+					metadata.add("measurement_extracted", n3gram.number.toString() + " " + extractedMeasurement);
+					metadata.add("measurement_verifyDump", n3gram.toString() + " | " + extractedMeasurement);
+				} else {
+					metadata.add("measurement_verifyDump", n3gram.toString());
+				}
+			}
+		}
 		
 		XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
         xhtml.startDocument();
         xhtml.endDocument();
+	}
+	
+	private String getTextFromTagRatioParser(InputStream stream, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
+		TagRatioParser parser = new TagRatioParser();
+		BodyContentHandler handler = new BodyContentHandler();
+		parser.parse(stream, handler, metadata, context);
+		
+		return handler.toString();
 	}
 	
 	private List<String> tokenize(String text) {
@@ -59,15 +92,15 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		List<BigDecimal> result = new ArrayList<>();
 		
 		if (tokens.size() == 1) {
-			BigDecimal num = getNumber(tokens.get(0), "");
+			BigDecimal num = convertToNumber(tokens.get(0), "");
 			result.add(num);
 		} else if (tokens.size() >= 1) {
 			for(int i = 0; i < tokens.size() - 1; i++) {
-				BigDecimal num = getNumber(tokens.get(i), tokens.get(i+1));
+				BigDecimal num = convertToNumber(tokens.get(i), tokens.get(i+1));
 				result.add(num);
 			}
 			
-			BigDecimal num = getNumber(tokens.get(tokens.size()-1), "");
+			BigDecimal num = convertToNumber(tokens.get(tokens.size()-1), "");
 			result.add(num);
 		}
 		
@@ -119,79 +152,31 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return result;
 	}
 	
-	/*
-	private List<StringAndNumber> fixAdjacentNumber(List<String> tokens, List<BigDecimal> nums) {
-		int i = 0;
-		List<StringAndNumber> result = new ArrayList<>();
-		while(i < tokens.size()) {
-			if (nums.get(i) == null) {
-				result.add(new StringAndNumber(tokens.get(i) , null));
-				i++;
-			} else {
-				String numString = tokens.get(i);
-				BigDecimal num = nums.get(i);
-				boolean extended = false;
-				
-				i++;
-				while(i < nums.size() && nums.get(i) != null) {
-					numString += " " + tokens.get(i);
-					extended = true;
-					i++;
-				}
-				
-				if (extended) {
-					num = getNumber(numString, i < nums.size() -1 ? tokens.get(i) : "");
-				}
-				
-				result.add(new StringAndNumber(numString, num));
-			}
-		}
+	private Set<String> confuseWords = new HashSet<>(Arrays.asList("for", "our", "height", "file"));
+	private BigDecimal convertToNumber(String word, String nextWord) {
 		
-		return result;
-	}
-	*/
-	
-	/*
-	private List<Number3Gram> extractNumbers1(List<String> tokens) {
-		List<Number3Gram> result = new ArrayList<>();
-		
-		if (tokens.size() == 1) {
-			BigDecimal num = getNumber(tokens.get(0), "");
-			if (num != null) {
-				result.add(new Number3Gram(num, tokens.get(0), "", ""));
+		if (NumberUtils.isNumber(word)) {
+			try {
+				return new BigDecimal(word);
+			} catch (Exception e) {
+				return BigDecimal.valueOf(NumberUtils.toDouble(word));
 			}
-		} else if (tokens.size() >= 1) {
-			BigDecimal num = getNumber(tokens.get(0), tokens.get(1));
-			if (num != null) {
-				result.add(new Number3Gram(num, tokens.get(0), "", tokens.get(1)));
-			}
-			
-			for(int i = 1; i < tokens.size() - 1; i++) {
-				num = getNumber(tokens.get(i), tokens.get(i+1));
-				if (num != null) {
-					result.add(new Number3Gram(num, tokens.get(i), tokens.get(i-1), tokens.get(i+1)));
-				}
-			}
-			
-			num = getNumber(tokens.get(tokens.size()-1), "");
-			if (num != null) {
-				result.add(new Number3Gram(num, tokens.get(tokens.size()-1), tokens.get(tokens.size()-2), ""));
-			}
-		}
-		
-		return result;
-	}
-	*/
-	
-	private BigDecimal getNumber(String word, String nextWord) {
-		try {
-			return new BigDecimal(word);
-		} catch(Exception e) {
-			
 		}
 		
 		if ("zero".equalsIgnoreCase(word)) {
 			return BigDecimal.ZERO;
+		}
+	
+		if (confuseWords.contains(word.toLowerCase())) {
+			return null;
+		}
+		
+		if (!"eight".equalsIgnoreCase(word) && word.toLowerCase().indexOf("ight") == 1) {
+			return null;
+		}
+		
+		if (!"four".equalsIgnoreCase(word) && word.toLowerCase().indexOf("our") == 1) {
+			return null;
 		}
 		
 		String num = QuantifiableEntityNormalizer.normalizedNumberString(word, nextWord, null);
@@ -202,22 +187,6 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return new BigDecimal(num);
 	}
 	
-	/*
-	private class StringAndNumber {
-		String string;
-		BigDecimal number;
-		
-		public StringAndNumber(String s, BigDecimal num) {
-			this.string = s;
-			this.number = num;
-		}
-		
-		@Override
-		public String toString() {
-			return String.format("%s %s", string, number == null ? "null" : number.toString());
-		}
-	}
-	*/
 	
 	private class Number3Gram {
 		BigDecimal number;
@@ -234,7 +203,7 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		
 		@Override
 		public String toString() {
-			return String.format("%s %s %s : %s", numberString, post1, post2, number.toString());
+			return String.format("%s %s %s | %s", numberString, post1, post2, number.toString());
 		}
 	}
 

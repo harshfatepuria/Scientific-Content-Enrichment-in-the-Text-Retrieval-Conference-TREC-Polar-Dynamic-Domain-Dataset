@@ -29,6 +29,7 @@ public class SweetOntology {
 
 	private static SweetOntology instance;
 	private static float defaultTolerance = 0.15f;
+	private static float defaultMeasurementTolerance = 0.2f;
 	
 	public static SweetOntology getInstance() throws Exception {
 		if (instance == null) {
@@ -45,6 +46,8 @@ public class SweetOntology {
 		repository.initialize();
 		loadOntology();
 		loadConcepts();
+//		loadPrefixs();
+		loadMeasurements();
 	}
 	
 	private static String[] ontologyFiles = new String[] { "human.owl", "humanAgriculture.owl", "humanCommerce.owl",
@@ -110,6 +113,8 @@ public class SweetOntology {
 		System.out.println("Ontology loaded");
 	}
 	
+	/* Storing all concepts for NER matching */
+	
 	private List<Concept> concepts;
 	
 	private void loadConcepts() {
@@ -130,13 +135,19 @@ public class SweetOntology {
 		System.out.println(concepts.size() + " concepts loaded");
 	}
 	
-	private String getConceptQuery(String concept) {
+	private String getConceptString(String concept) {
 		Integer indexOfHash = concept.lastIndexOf("#");
 		if (indexOfHash < 0) {
 			return null;
 		}
 		
-		return concept.substring(indexOfHash + 1).toLowerCase();
+		return concept.substring(indexOfHash + 1);
+	}
+	
+	/* Fuzzy concept querying */
+	private String getConceptQuery(String concept) {
+		String conceptString = getConceptString(concept);
+		return conceptString == null ? null : conceptString.toLowerCase();
 	}
 	
 	public Optional<MatchedConcept> queryFirst(String query) {
@@ -182,7 +193,7 @@ public class SweetOntology {
 		}
 	}
 	
-	public List<BindingSet> queryNestedRelationalConcept(String relation, String concept) {
+	public List<BindingSet> queryConceptThatRecursivelyHasRelationWith(String relation, String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
 		try (RepositoryConnection con = repository.getConnection()) {
@@ -195,7 +206,7 @@ public class SweetOntology {
 		}
 	}
 	
-	public List<BindingSet> queryNestedRelationalConcept(String firstRelation, String optionalRelation, String concept) {
+	public List<BindingSet> queryConceptThatRecursivelyHasRelationWith(String firstRelation, String optionalRelation, String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
 		try (RepositoryConnection con = repository.getConnection()) {
@@ -208,17 +219,281 @@ public class SweetOntology {
 		}
 	}
 	
-	private List<MatchedConcept> prefixs;
+	public List<BindingSet> queryConceptThatHasRelation(String concept, String relation) {
+		ValueFactory factory = repository.getValueFactory();
+		
+		try (RepositoryConnection con = repository.getConnection()) {
+			String nestedRelation = String.format("<%s>", relation);
+			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?o WHERE {{?s " + nestedRelation + " ?o} FILTER( (str(?s) = str(?is)) )}");
+			query.setBinding("is", factory.createLiteral(concept));
+			
+			TupleQueryResult queryResults = query.evaluate();
+			return QueryResults.asList(queryResults);
+		}
+	}
+	
+	
+	/* Store all Measurement/Unit concepts */
+//	private List<Concept> prefixs;
 	private List<MeasurementConcept> measurements;
 	
 	private static String relaType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	private static String relaSubclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
-	private static String conceptPrefix = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Prefix";
+//	private static String relaHasSymbol = "http://sweet.jpl.nasa.gov/2.3/relaSci.owl#hasSymbol";
+//	private static String conceptPrefix = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Prefix";
 	private static String conceptUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Unit";
 	
-	private void loadPrefix() {
-		List<BindingSet> result = this.queryNestedRelationalConcept(relaType, conceptPrefix);
+	/*
+	private void loadPrefixs() {
+		prefixs = new ArrayList<>();
+		List<BindingSet> result = this.queryConceptThatRecursivelyHasRelationWith(relaType, conceptPrefix);
 		
+		for(BindingSet b : result) {
+			String value = b.getValue("s").stringValue();
+			String query = getConceptQuery(value);
+			if (query != null) {
+				prefixs.add(new Concept(value, query));
+			}
+		}
+		System.out.println(prefixs.size() + " prefixes loaded");
+	}
+	*/
+	
+	private void loadMeasurements() {
+		measurements = new ArrayList<>();
+		
+		List<BindingSet> result = this.queryConceptThatRecursivelyHasRelationWith(relaType, relaSubclass, conceptUnit);
+		
+		for(BindingSet b : result) {
+			String value = b.getValue("s").stringValue();
+			String query = getConceptQuery(value);
+			
+			if (query.equals("dimensionlessUnit") || query.equals("normalizedUnit") || query.equals("ratio") || query.equals("volumeRatio")) {
+				continue;
+			}
+			
+			if (query != null) {
+				List<String> symbolList = new ArrayList<>();
+//				List<BindingSet> symbolSet = this.queryConceptThatHasRelation(value, relaHasSymbol);
+//				symbolSet.forEach(sb -> symbolList.add(sb.getValue("o").stringValue()));
+				
+				if (query.equals("degreec")) {
+					symbolList.add("celsius");
+					symbolList.add("degree celsius");
+					symbolList.add("degree C");
+					symbolList.add("°C");
+				}
+				
+				if (query.equals("degreef")) {
+					symbolList.add("fahrenheit");
+					symbolList.add("degree fahrenheit");
+					symbolList.add("°F");
+				}
+				
+				if (query.equals("kelvin")) {
+					symbolList.add("K");
+				}
+				
+				if (query.equals("meter")) {
+					symbolList.add("m");
+				}
+				
+				if (query.equals("kilometer")) {
+					symbolList.add("km");
+				}
+				
+				if (query.equals("centimeter")) {
+					symbolList.add("cm");
+				}
+				
+				if (query.equals("millimeter")) {
+					symbolList.add("mm");
+				}
+				
+				if (query.equals("nanometer")) {
+					symbolList.add("nm");
+				}
+				
+				if (query.equals("meterSquared")) {
+					symbolList.add("square metre");
+					symbolList.add("square meter");
+					symbolList.add("squaremetre");
+					symbolList.add("squaremeter");
+				}
+				
+				if (query.equals("meterCubed")) {
+					symbolList.add("cubic metre");
+					symbolList.add("cubic meter");
+					symbolList.add("cubicmetre");
+					symbolList.add("cubicmeter");
+				}
+				
+				if (query.equals("perSecond")) {
+					symbolList.add("Hz");
+				}
+				
+				if (query.equals("kilohertz")) {
+					symbolList.add("KHz");
+				}
+				
+				if (query.equals("megahertz")) {
+					symbolList.add("MHz");
+				}
+				
+				if (query.equals("gigahertz")) {
+					symbolList.add("GHz");
+				}
+				
+				if (query.equals("mole")) {
+					symbolList.add("mol");
+				}
+				
+				if (query.equals("joule")) {
+					symbolList.add("J");
+				}
+				
+				if (query.equals("pascal")) {
+					symbolList.add("Pa");
+				}
+				
+				if (query.equals("pascalPerSecond")) {
+					symbolList.add("Pa/s");
+				}
+				
+				/*
+				if (query.equals("farad")) {
+					symbolList.remove("F");
+				}
+				
+				if (query.equals("coulomb")) {
+					symbolList.remove("C");
+				}
+				
+				if (query.equals("ampere")) {
+					symbolList.remove("a");
+				}
+				
+				if (query.equals("steradian")) {
+					symbolList.remove("sr");
+				}
+				
+				if (query.equals("second")) {
+					symbolList.remove("s");
+				}
+				
+				if (query.equals("newton")) {
+					symbolList.remove("N");
+				}
+				
+				if (query.equals("siemens")) {
+					symbolList.remove("G");
+				}
+				*/
+		
+				measurements.add(new MeasurementConcept(value, query, symbolList));
+			}
+		}
+		
+		System.out.println(measurements.size() + " measurements loaded");
+	}
+	
+	public String matchMeasurement(String p1, String p2) {
+		p1 = p1.trim();
+		p2 = p2.trim();
+		
+		String p1Stripped = p1.replaceAll("\\.", "");
+		String p2Stripped = p2.replaceAll("\\.", "");
+		String concatStripped = p1Stripped + " " + p2Stripped;
+		
+		/* longest symbol exact match */
+		MeasurementConcept bestMc = null;
+		int longestSymbolLength = -1;
+		
+		for(MeasurementConcept mc : measurements) {
+			for(String symbol : mc.symbols) {
+				if(symbol.length() > longestSymbolLength && (p1Stripped.equals(symbol) || p2Stripped.equals(symbol) || concatStripped.equals(symbol))) {
+					longestSymbolLength = symbol.length();
+					bestMc = mc;
+				}
+			}
+		}
+		
+		if (bestMc != null) {
+			return getConceptString(bestMc.fullName);
+		}
+		
+		/* longest symbol case-insensitive match */
+		bestMc = null;
+		longestSymbolLength = -1;
+		for(MeasurementConcept mc : measurements) {
+			for(String symbol : mc.symbols) {
+				if(symbol.length() > longestSymbolLength && (p1Stripped.equalsIgnoreCase(symbol) || p2Stripped.equalsIgnoreCase(symbol) || concatStripped.equalsIgnoreCase(symbol))) {
+					longestSymbolLength = symbol.length();
+					bestMc = mc;
+				}
+			}
+		}
+		
+		if (bestMc != null) {
+			return getConceptString(bestMc.fullName);
+		}
+		
+		String concat = p1 + " " + p2;
+		String p1Lower = p1.toLowerCase();
+		String p2Lower = p2.toLowerCase();
+		String concatLower = p1Lower + " " + p2Lower;
+		
+		/* longest query case-insensitive containment */
+		/*
+		bestMc = null;
+		int longestQueryMatchLength = -1;
+		for(MeasurementConcept mc : measurements) {
+			String query = mc.queryName;
+			if(query.length() > longestQueryMatchLength && (concatLower.contains(query))) {
+				longestQueryMatchLength = query.length();
+				bestMc = mc;
+			}
+		}
+		
+		if (bestMc != null) {
+			return getConceptString(bestMc.fullName);
+		}
+		*/
+		
+		
+		/* smallest edit distance query match */
+		bestMc = null;
+		float smallestDistance = Float.MAX_VALUE;
+		
+		for(MeasurementConcept mc : measurements) {
+			float p1Distance = mc.getDistanceFromQuery(p1Lower);
+			float p1Tolerance = defaultMeasurementTolerance * Math.max(mc.queryName.length(), p1.length());
+			if (p1Distance <= p1Tolerance && p1Distance < smallestDistance) {
+				smallestDistance = p1Distance;
+				bestMc = mc;
+			}
+			
+			float p2Distance = mc.getDistanceFromQuery(p2Lower);
+			float p2Tolerance = defaultMeasurementTolerance * Math.max(mc.queryName.length(), p2.length());
+			if (p2Distance <= p2Tolerance && p2Distance < smallestDistance) {
+				smallestDistance = p2Distance;
+				bestMc = mc;
+			}
+			
+			
+			float concatDistance = mc.getDistanceFromQuery(concatLower);
+			float concatTolerance = defaultMeasurementTolerance * Math.max(mc.queryName.length(), concat.length());
+			if (concatDistance <= concatTolerance && concatDistance < smallestDistance) {
+				smallestDistance = concatDistance;
+				bestMc = mc;
+			}
+		}
+		
+		if (bestMc != null) {
+			return getConceptString(bestMc.fullName);
+		}
+
+		return null;
 	}
 	
 	public class MatchedConcept {
@@ -231,7 +506,7 @@ public class SweetOntology {
 		}
 	}
 	
-	class Concept {
+	private class Concept {
 		public String fullName;
 		public String queryName;
 		
@@ -243,15 +518,50 @@ public class SweetOntology {
 		public float getDistanceFromQuery(String query) {
 			return StringUtils.getLevenshteinDistance(queryName, query);
 		}
+		
+		@Override
+		public String toString() {
+			return fullName + " : " + queryName;
+		}
 	}
 	
-	class MeasurementConcept extends Concept {
-		public String[] symbols;
-		MeasurementConcept(String fullName, String queryName, String[] symbols) {
+	private class MeasurementConcept extends Concept {
+		public List<String> symbols;
+		MeasurementConcept(String fullName, String queryName, List<String> symbols) {
 			super(fullName, queryName);
 			this.symbols = symbols;
 		}
+		
+		@Override
+		public String toString() {
+			return fullName + " : " + queryName + " : " +  Arrays.toString(symbols.toArray());
+		}
 	}
+	
+	/*
+	public class MeasurementAndPrefix {
+		public String measurement;
+		public String prefix;
+		
+		public MeasurementAndPrefix(String measurement) {
+			this(measurement, null);
+		}
+		
+		public MeasurementAndPrefix(String measurement, String prefix) {
+			this.measurement = measurement;
+			this.prefix = prefix;
+		}
+		
+		@Override
+		public String toString() {
+			if (prefix == null) {
+				return measurement;
+			} else {
+				return measurement + " " + prefix;
+			}
+		}
+	}
+	*/
 	
 	public static void printSweetOntologyFiles() throws URISyntaxException, IOException {
 		File ontologyFolder = new File(SweetOntology.class.getResource("/sweet/ontology").toURI());
