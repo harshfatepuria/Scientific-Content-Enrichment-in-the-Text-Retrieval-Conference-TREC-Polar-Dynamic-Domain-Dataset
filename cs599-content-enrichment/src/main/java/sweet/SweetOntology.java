@@ -120,15 +120,23 @@ public class SweetOntology {
 		
 		results.forEach(b -> {
 			String value = b.getValue("s").stringValue();
-			Integer indexOfHash = value.lastIndexOf("#");
-			if (indexOfHash < 0) {
-				return;
-			}
+			String queryString = getConceptQuery(value);
 			
-			concepts.add(new Concept(value, value.substring(indexOfHash + 1).toLowerCase()));
+			if (queryString != null) {
+				concepts.add(new Concept(value, queryString));	
+			}
 		});
 		
 		System.out.println(concepts.size() + " concepts loaded");
+	}
+	
+	private String getConceptQuery(String concept) {
+		Integer indexOfHash = concept.lastIndexOf("#");
+		if (indexOfHash < 0) {
+			return null;
+		}
+		
+		return concept.substring(indexOfHash + 1).toLowerCase();
 	}
 	
 	public Optional<MatchedConcept> queryFirst(String query) {
@@ -174,17 +182,43 @@ public class SweetOntology {
 		}
 	}
 	
-	public List<BindingSet> queryRelationalConcept(String relation, String concept) {
+	public List<BindingSet> queryNestedRelationalConcept(String relation, String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
 		try (RepositoryConnection con = repository.getConnection()) {
-			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?r ?o WHERE {{?s ?r ?o} FILTER( (str(?o) = str(?io)) && (str(?r) = str(?ir)) )}");
-			query.setBinding("ir", factory.createLiteral(relation));
+			String nestedRelation = String.format("<%s>*/<%s>", relation, relation);
+			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?o WHERE {{?s " + nestedRelation + " ?o} FILTER( (str(?o) = str(?io)) )}");
 			query.setBinding("io", factory.createLiteral(concept));
 			
 			TupleQueryResult queryResults = query.evaluate();
 			return QueryResults.asList(queryResults);
 		}
+	}
+	
+	public List<BindingSet> queryNestedRelationalConcept(String firstRelation, String optionalRelation, String concept) {
+		ValueFactory factory = repository.getValueFactory();
+		
+		try (RepositoryConnection con = repository.getConnection()) {
+			String nestedRelation = String.format("<%s>/<%s>*/<%s>", firstRelation, optionalRelation, optionalRelation);
+			TupleQuery query = con.prepareTupleQuery("SELECT ?s ?o WHERE {{?s " + nestedRelation + " ?o} FILTER( (str(?o) = str(?io)) )}");
+			query.setBinding("io", factory.createLiteral(concept));
+			
+			TupleQueryResult queryResults = query.evaluate();
+			return QueryResults.asList(queryResults);
+		}
+	}
+	
+	private List<MatchedConcept> prefixs;
+	private List<MeasurementConcept> measurements;
+	
+	private static String relaType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	private static String relaSubclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+	private static String conceptPrefix = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Prefix";
+	private static String conceptUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Unit";
+	
+	private void loadPrefix() {
+		List<BindingSet> result = this.queryNestedRelationalConcept(relaType, conceptPrefix);
+		
 	}
 	
 	public class MatchedConcept {
@@ -197,7 +231,7 @@ public class SweetOntology {
 		}
 	}
 	
-	private class Concept {
+	class Concept {
 		public String fullName;
 		public String queryName;
 		
@@ -208,6 +242,14 @@ public class SweetOntology {
 		
 		public float getDistanceFromQuery(String query) {
 			return StringUtils.getLevenshteinDistance(queryName, query);
+		}
+	}
+	
+	class MeasurementConcept extends Concept {
+		public String[] symbols;
+		MeasurementConcept(String fullName, String queryName, String[] symbols) {
+			super(fullName, queryName);
+			this.symbols = symbols;
 		}
 	}
 	

@@ -34,6 +34,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import edu.stanford.nlp.ie.QuantifiableEntityNormalizer;
 import geoparser.GeoParserRunner;
 import measurement.MeasurementParser;
 import shared.FileMarker;
@@ -236,24 +237,27 @@ public class Main {
 	*/
 	
 	private static void testMeasurement() throws Exception {
-//		SweetOntology sweet = SweetOntology.getInstance();
+		SweetOntology sweet = SweetOntology.getInstance();
 //		String query = "ComplexUnit";
 //		String concept = sweet.queryFirst(query).get().concept;
 //		System.out.println(concept);
 		
 		String relaType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+		String relaSubclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 		String conceptPrefix = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Prefix";
 		String conceptUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#Unit";
 		String conceptBaseUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#BaseUnit";
 		String conceptComplexUnit = "http://sweet.jpl.nasa.gov/2.3/reprSciUnits.owl#ComplexUnit";
 		
 		
-//		List<BindingSet> result = sweet.queryTriples(concept);
-//		List<BindingSet> result = sweet.queryRelationalConcept(relaType, conceptPrefix);
+//		List<BindingSet> result = sweet.queryTriples(conceptUnit);
+//		List<BindingSet> result = sweet.queryNestedRelationalConcept(relaType, relaSubclass, conceptUnit);
+		List<BindingSet> result = sweet.queryNestedRelationalConcept(relaType, conceptPrefix);
 		
-//		for(BindingSet bs : result) {
-//			System.out.println(bs.getValue("s") + " - " + bs.getValue("r") + " - " + bs.getValue("o"));
-//		}
+		for(BindingSet bs : result) {
+			System.out.println(bs.getValue("s") + " - " + bs.getValue("r") + " - " + bs.getValue("o"));
+		}
+		System.out.println(result.size());
 		
 		MeasurementParser parser = new MeasurementParser();
 		parser.parse(null, null, null);

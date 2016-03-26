@@ -32,9 +32,10 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		String text = "This place is twenty-two km long and 2,400 metre high. \n Its average temperature is 60 F but sometimes can be up to 37.5 degree celcius. It is 0 tolerance.";
 		
 		List<String> tokens = tokenize(text);
-		List<Number3Gram> nums = extractNumbers(tokens);
+		List<BigDecimal> nums = extractNumbers(tokens);
+		List<Number3Gram> extractedTuples = extractNumbers3Gram(tokens, nums);
 		
-		nums.forEach(n -> System.out.println(n));
+		extractedTuples.forEach(n -> System.out.println(n));
 		
 		XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
         xhtml.startDocument();
@@ -54,9 +55,105 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return list;
 	}
 	
-	private List<Number3Gram> extractNumbers(List<String> tokens) {
+	private List<BigDecimal> extractNumbers(List<String> tokens) {
+		List<BigDecimal> result = new ArrayList<>();
+		
+		if (tokens.size() == 1) {
+			BigDecimal num = getNumber(tokens.get(0), "");
+			result.add(num);
+		} else if (tokens.size() >= 1) {
+			for(int i = 0; i < tokens.size() - 1; i++) {
+				BigDecimal num = getNumber(tokens.get(i), tokens.get(i+1));
+				result.add(num);
+			}
+			
+			BigDecimal num = getNumber(tokens.get(tokens.size()-1), "");
+			result.add(num);
+		}
+		
+		return result;
+	}
+	
+	private List<Number3Gram> extractNumbers3Gram(List<String> tokens, List<BigDecimal> nums) {
 		List<Number3Gram> result = new ArrayList<>();
 		
+		if (tokens.size() == 1) {
+			BigDecimal num = nums.get(0);
+			
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(0), "", ""));
+			}
+		} else if (tokens.size() == 2) {
+			BigDecimal num = nums.get(0);
+			
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(0), tokens.get(1), ""));
+			}
+			
+			num = nums.get(1);
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(1), "", ""));
+			}
+		} else {
+			for(int i = 0; i < tokens.size() - 2; i++) {
+				BigDecimal num = nums.get(i);
+				if (num != null) {
+					result.add(new Number3Gram(num, tokens.get(i), tokens.get(i+1), tokens.get(i+2)));
+				}
+			}
+			
+			int i = tokens.size() - 2;
+			BigDecimal num = nums.get(i);
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(i), tokens.get(i+1), ""));
+			}
+			
+			i++;
+			num = nums.get(i);
+			if (num != null) {
+				result.add(new Number3Gram(num, tokens.get(i), "", ""));
+			}
+			
+		}
+		
+		return result;
+	}
+	
+	/*
+	private List<StringAndNumber> fixAdjacentNumber(List<String> tokens, List<BigDecimal> nums) {
+		int i = 0;
+		List<StringAndNumber> result = new ArrayList<>();
+		while(i < tokens.size()) {
+			if (nums.get(i) == null) {
+				result.add(new StringAndNumber(tokens.get(i) , null));
+				i++;
+			} else {
+				String numString = tokens.get(i);
+				BigDecimal num = nums.get(i);
+				boolean extended = false;
+				
+				i++;
+				while(i < nums.size() && nums.get(i) != null) {
+					numString += " " + tokens.get(i);
+					extended = true;
+					i++;
+				}
+				
+				if (extended) {
+					num = getNumber(numString, i < nums.size() -1 ? tokens.get(i) : "");
+				}
+				
+				result.add(new StringAndNumber(numString, num));
+			}
+		}
+		
+		return result;
+	}
+	*/
+	
+	/*
+	private List<Number3Gram> extractNumbers1(List<String> tokens) {
+		List<Number3Gram> result = new ArrayList<>();
 		
 		if (tokens.size() == 1) {
 			BigDecimal num = getNumber(tokens.get(0), "");
@@ -84,12 +181,17 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		
 		return result;
 	}
+	*/
 	
 	private BigDecimal getNumber(String word, String nextWord) {
 		try {
 			return new BigDecimal(word);
 		} catch(Exception e) {
 			
+		}
+		
+		if ("zero".equalsIgnoreCase(word)) {
+			return BigDecimal.ZERO;
 		}
 		
 		String num = QuantifiableEntityNormalizer.normalizedNumberString(word, nextWord, null);
@@ -100,22 +202,39 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return new BigDecimal(num);
 	}
 	
+	/*
+	private class StringAndNumber {
+		String string;
+		BigDecimal number;
+		
+		public StringAndNumber(String s, BigDecimal num) {
+			this.string = s;
+			this.number = num;
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("%s %s", string, number == null ? "null" : number.toString());
+		}
+	}
+	*/
+	
 	private class Number3Gram {
 		BigDecimal number;
-		String pre;
 		String numberString;
-		String post;
+		String post1;
+		String post2;
 		
-		Number3Gram(BigDecimal number, String actualNumberString, String pre, String post) {
+		Number3Gram(BigDecimal number, String actualNumberString, String post1, String post2) {
 			this.numberString = actualNumberString;
-			this.pre = pre;
-			this.post = post;
+			this.post1 = post1;
+			this.post2 = post2;
 			this.number = number;
 		}
 		
 		@Override
 		public String toString() {
-			return String.format("%s %s %s", pre, numberString, post);
+			return String.format("%s %s %s : %s", numberString, post1, post2, number.toString());
 		}
 	}
 
