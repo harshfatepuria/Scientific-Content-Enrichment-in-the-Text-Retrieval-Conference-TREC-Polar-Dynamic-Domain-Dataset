@@ -81,7 +81,7 @@ public abstract class AbstractParserRunner {
 						successPath.add(relativePath);
 					}
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 

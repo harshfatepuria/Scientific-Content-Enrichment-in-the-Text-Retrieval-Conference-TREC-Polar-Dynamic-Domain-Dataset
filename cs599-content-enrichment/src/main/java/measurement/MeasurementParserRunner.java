@@ -19,6 +19,7 @@ import shared.AbstractParserRunner;
 public class MeasurementParserRunner extends AbstractParserRunner {
 
 	private MeasurementParser measurementParser;
+	private boolean extractDumpData = false;
 	
 	public MeasurementParserRunner(String baseFolder, String resultFolder) throws Exception {
 		this(baseFolder, resultFolder, null);
@@ -33,6 +34,15 @@ public class MeasurementParserRunner extends AbstractParserRunner {
 	
 	private void initializeParser() throws Exception {
 		measurementParser = new MeasurementParser();
+	}
+
+	
+	public boolean isExtractDumpData() {
+		return extractDumpData;
+	}
+
+	public void setExtractDumpData(boolean extractDumpData) {
+		this.extractDumpData = extractDumpData;
 	}
 
 	@Override

@@ -33,6 +33,17 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		sweet = SweetOntology.getInstance();
 	}
 	
+	private boolean extractDumpData = false;
+	
+	
+	public boolean isExtractDumpData() {
+		return extractDumpData;
+	}
+
+	public void setExtractDumpData(boolean extractDumpData) {
+		this.extractDumpData = extractDumpData;
+	}
+
 	private static final long serialVersionUID = 664156334712200733L;
 
 	@Override
@@ -57,9 +68,13 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 				String extractedMeasurement = sweet.matchMeasurement(n3gram.post1, n3gram.post2);
 				if(extractedMeasurement != null) {
 					metadata.add("measurement_extracted", n3gram.number.toString() + " " + extractedMeasurement);
-					metadata.add("measurement_verifyDump", n3gram.toString() + " | " + extractedMeasurement);
+					if (isExtractDumpData()) {
+						metadata.add("measurement_verifyDump", n3gram.toString() + " | " + extractedMeasurement);
+					}
 				} else {
-					metadata.add("measurement_verifyDump", n3gram.toString());
+					if (isExtractDumpData()) {
+						metadata.add("measurement_verifyDump", n3gram.toString());
+					}
 				}
 			}
 		}
@@ -188,7 +203,7 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		try {
 			Number n = NumberNormalizer.wordToNumber(word);
 			return new BigDecimal(n.toString());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}

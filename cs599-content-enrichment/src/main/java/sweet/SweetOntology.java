@@ -281,12 +281,15 @@ public class SweetOntology {
 					symbolList.add("celsius");
 					symbolList.add("degree celsius");
 					symbolList.add("degree C");
+					symbolList.add("deg C");
 					symbolList.add("°C");
 				}
 				
 				if (query.equals("degreef")) {
 					symbolList.add("fahrenheit");
 					symbolList.add("degree fahrenheit");
+					symbolList.add("degree F");
+					symbolList.add("deg F");
 					symbolList.add("°F");
 				}
 				
