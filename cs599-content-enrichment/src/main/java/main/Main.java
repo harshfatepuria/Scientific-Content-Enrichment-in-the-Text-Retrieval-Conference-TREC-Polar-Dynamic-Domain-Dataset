@@ -23,6 +23,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.jpeg.JpegParser;
+import org.apache.tika.parser.ocr.TesseractOCRParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ToTextContentHandler;
 import org.openrdf.query.BindingSet;
@@ -47,6 +48,7 @@ import shared.PathMetadata;
 import shared.TikaExtractedTextBasedParser;
 import sweet.SweetOntology;
 import sweet.SweetParserRunner;
+import tessaract.TesseractOCRParserRunner;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
@@ -68,6 +70,9 @@ public class Main {
 		} 
 		else if (args[0].equalsIgnoreCase("measurement")) {
 			runMeasurement(args);
+		} 
+		else if (args[0].equalsIgnoreCase("ocr")) {
+			runOCR(args);
 		}
 		
 		System.out.println("Finish " + sdf.format(Calendar.getInstance().getTime()));
@@ -158,6 +163,18 @@ public class Main {
 		try(PrintWriter out = new PrintWriter(jsonFile)) {
 			out.print(gson.toJson(successPath));
 		}
+		System.out.println("No of files: " + successPath.size());
+	}
+	
+	private static void runOCR(String[] args) throws Exception {
+		System.out.println("run TesseractOCR");
+		String baseFolder = "C:\\cs599\\polar-fulldump";
+		String resultFolder = "C:\\cs599\\a2\\tesseract\\result";
+		String markerFile = "C:\\cs599\\a2\\tesseract\\marker.txt";
+		
+		TesseractOCRParserRunner runner = new TesseractOCRParserRunner(baseFolder, resultFolder, markerFile);
+		List<String> successPath = runner.runParser();
+		
 		System.out.println("No of files: " + successPath.size());
 	}
 	
@@ -342,6 +359,7 @@ public class Main {
 //		
 		Metadata metadata = new Metadata();
 		BodyContentHandler handler = new BodyContentHandler();
+		
 //		TagRatioParser tagParser = new TagRatioParser();
 //		try (InputStream stream = new FileInputStream(path)) {
 //			tagParser.parse(stream, handler, metadata);
@@ -359,5 +377,6 @@ public class Main {
 //		MeasurementParser parser = new MeasurementParser();
 //		parser.parse(null, null, null);
 	}
+	
 	
 }

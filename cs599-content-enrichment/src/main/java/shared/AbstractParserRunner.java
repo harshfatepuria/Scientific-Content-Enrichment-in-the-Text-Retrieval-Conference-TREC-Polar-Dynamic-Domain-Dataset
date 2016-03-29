@@ -54,6 +54,10 @@ public abstract class AbstractParserRunner {
 		});
 		
 		Files.walk(Paths.get(baseFolder)).filter(Files::isRegularFile).forEach(path -> {
+			if (!isAllowProcessing(path)) {
+				return;
+			}
+			
 			/* temporary ignore large files  */
 			if (path.toFile().length() > (2*1024*1024)) {
 				return;
@@ -111,6 +115,10 @@ public abstract class AbstractParserRunner {
 	}
 
 	protected abstract boolean parse(Path path, File resultFile) throws Exception;
+	
+	protected boolean isAllowProcessing(Path path) {
+		return true;
+	}
 	
 	protected InputStream getInputStream(Path path) throws FileNotFoundException {
 		return new FileInputStream(path.toFile());
