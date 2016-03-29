@@ -21,6 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.parser.ocr.TesseractOCRParser;
@@ -55,6 +56,7 @@ public class Main {
 		if (args.length == 0) {
 //			runMeasurement(args);
 //			testMeasurement();
+			detectType();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -168,9 +170,9 @@ public class Main {
 	
 	private static void runOCR(String[] args) throws Exception {
 		System.out.println("run TesseractOCR");
-		String baseFolder = "C:\\cs599\\polar-fulldump";
-		String resultFolder = "C:\\cs599\\a2\\tesseract\\result";
-		String markerFile = "C:\\cs599\\a2\\tesseract\\marker.txt";
+		String baseFolder = "C:\\cs599\\polar-fulldump-img\\";
+		String resultFolder = "C:\\cs599\\a2\\tesseract\\result-img";
+		String markerFile = "C:\\cs599\\a2\\tesseract\\marker-img.txt";
 		
 		TesseractOCRParserRunner runner = new TesseractOCRParserRunner(baseFolder, resultFolder, markerFile);
 		List<String> successPath = runner.runParser();
@@ -359,7 +361,7 @@ public class Main {
 //		
 		Metadata metadata = new Metadata();
 		BodyContentHandler handler = new BodyContentHandler();
-		
+//		TesseractOCRParser
 //		TagRatioParser tagParser = new TagRatioParser();
 //		try (InputStream stream = new FileInputStream(path)) {
 //			tagParser.parse(stream, handler, metadata);
@@ -378,5 +380,14 @@ public class Main {
 //		parser.parse(null, null, null);
 	}
 	
-	
+	private static void detectType() throws IOException {
+		String base = "C:\\cs599\\polar-fulldump\\";
+		String rela = "edu\\columbia\\ciesin\\sedac\\95D91390333A603BCF46908536BA81CAED4DA960CB3D004DFFF5A32F68085095";
+		
+		Tika tika = new Tika();
+		File f = new File(base + rela);
+		System.out.println(tika.detect(f));
+//		 MediaType.image("png").toString(), MediaType.image("tiff").toString(), MediaType.image("x-ms-bmp").toString()
+		System.out.println(MediaType.image("x-ms-bmp").toString());
+	}
 }

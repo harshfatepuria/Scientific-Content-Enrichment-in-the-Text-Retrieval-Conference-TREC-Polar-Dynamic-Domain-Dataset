@@ -4,8 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MediaType;
 
 import shared.AbstractTypeLimitParserRunner;
 
@@ -28,12 +33,18 @@ public class TesseractOCRParserRunner extends AbstractTypeLimitParserRunner {
 		tika = new Tika();
 	}
 	
+	private static final Set<String> SUPPORTED_TYPES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(new String[] {
+                    MediaType.image("png").toString(), MediaType.image("tiff").toString(), MediaType.image("x-ms-bmp").toString()
+            })));
+	
 	@Override
 	protected boolean isAllowedType(String type) {
 		if (type == null) {
 			return false;
 		}
-		return type.startsWith("image/");
+		
+		return SUPPORTED_TYPES.contains(type);
 	}
 
 	@Override
