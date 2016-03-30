@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -56,7 +57,8 @@ public class Main {
 		if (args.length == 0) {
 //			runMeasurement(args);
 //			testMeasurement();
-			detectType();
+//			detectType();
+//			fixDataInFolderMeasurement();
 			System.out.println("Invalid arguments");
 			return;
 		}
@@ -119,8 +121,8 @@ public class Main {
 	private static void runMeasurement(String[] args) throws Exception {
 		System.out.println("run MeasurementParser");
 		String baseFolder = "C:\\cs599\\polar-fulldump";
-		String resultFolder = "C:\\cs599\\a2\\measurment\\result";
-		String markerFile = "C:\\cs599\\a2\\measurment\\marker.txt";
+		String resultFolder = "C:\\cs599\\a2\\measurement\\result";
+		String markerFile = "C:\\cs599\\a2\\measurement\\marker.txt";
 		
 		MeasurementParserRunner measurementParserRunner = new MeasurementParserRunner(baseFolder, resultFolder, markerFile);
 		List<String> successPath = measurementParserRunner.runParser();
@@ -320,6 +322,55 @@ public class Main {
 	}
 	*/
 	
+	/*
+	private static void fixDataInFolderMeasurement() throws IOException {
+		String resultFolder = "C:\\cs599\\a2\\measurement\\result";
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		List<String> notFixed = new ArrayList<>();
+		int[] count = new int[]{0};
+		
+		Files.walk(Paths.get(resultFolder)).filter(Files::isRegularFile).forEach(path -> {
+			try {
+				count[0]++;
+				fixDataMeasurement(gson, path.toFile());
+			} catch (Exception e) {
+				e.printStackTrace();
+				notFixed.add(path.toString());
+			}
+		});
+		
+		System.out.println(count[0] + " fixed");
+		notFixed.forEach(s -> System.out.println(s));
+	}
+	
+	private static void fixDataMeasurement(Gson gson, File f) throws JsonSyntaxException, JsonIOException, IOException {
+		Metadata meta = null;
+		try (FileReader fr = new FileReader(f)) {
+			meta = gson.fromJson(fr, Metadata.class);
+		}
+		f.delete();
+		
+		String[] extractedTexts = meta.getValues("measurement_extracted");
+		meta.set("measurement_extracted", null);
+		
+		for(String text : extractedTexts) {
+			String[] sp = text.split(" ");
+			BigDecimal value = (new BigDecimal(sp[0]));
+			String unit = sp[1];
+			
+			meta.add("measurement_value", value.toString());
+			meta.add("measurement_unit", unit);
+			meta.add("measurement_extractedText", text);
+		}
+		
+		String json = gson.toJson(meta);
+		
+		try(PrintWriter out = new PrintWriter(f)) {
+			out.print(json);
+		}
+	}
+	*/
 	
 	private static void testMeasurement() throws Exception {
 //		SweetOntology sweet = SweetOntology.getInstance();

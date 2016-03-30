@@ -67,13 +67,17 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 			for(Number3Gram n3gram : extractedTuples) {
 				String extractedMeasurement = sweet.matchMeasurement(n3gram.post1, n3gram.post2);
 				if(extractedMeasurement != null) {
-					metadata.add("measurement_extracted", n3gram.number.toString() + " " + extractedMeasurement);
+					metadata.add("measurement_value", n3gram.number.toString());
+					metadata.add("measurement_unit", extractedMeasurement);
+					
+					String extractedText = n3gram.number.toString() + " " + extractedMeasurement;
+					metadata.add("measurement_extractedText", extractedText);
 					if (isExtractDumpData()) {
-						metadata.add("measurement_verifyDump", n3gram.toString() + " | " + extractedMeasurement);
+						metadata.add("measurement_dump", n3gram.toString() + " | " + extractedMeasurement);
 					}
 				} else {
 					if (isExtractDumpData()) {
-						metadata.add("measurement_verifyDump", n3gram.toString());
+						metadata.add("measurement_dump", n3gram.toString());
 					}
 				}
 			}
