@@ -31,24 +31,24 @@
 </style>
 </head>
 <body>
-<h2>BAR CHART SHOWING NUMBER OF OCCURRENCES OF DIFFERENT UNITS IN THE DATA</h2>
-
-<h3>SOLR QUERY: http://localhost:8983/solr/newtest/select?q=metadata.measurement_unit%3A*&start=0&rows=0&wt=json&indent=true&facet=true&facet.field=metadata.measurement_unit</h3>
+<h2>BAR CHART SHOWING NUMBER OF OCCURRENCES OF DIFFERENT GEO LOCATIONS IN THE DATA</h2>
+<h3>SOLR QUERY: http://localhost:8983/solr/HW2/select?q=metadata.Geographic_NAME%3A*&start=0&rows=0&wt=json&indent=true&facet=true&facet.field=metadata.Geographic_NAME&facet.limit=100</h3>
 <script type="text/javascript" src="d3.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="jquery.js"></script>
 <script>
 
 
-var fileName="json/measurement_unit_count_extracted.json";  
+var fileName="json/geo_location_count.json";  
 
 
+  // document.getElementById("name").innerHTML=fileName;
 $.getJSON(fileName, function(json) {
       var data=[];
       var prev="";
       var current=0;
      // var tt = JSON.parse(json);
-      //alert(json["facet_counts"]["facet_fields"]["metadata.measurement_unit"]);
-       $.each(json["facet_counts"]["facet_fields"]["metadata.measurement_unit"], function(i,field){
+     // alert(json["facet_counts"]["facet_fields"]["metadata.Geographic_NAME"][0]);
+       $.each(json["facet_counts"]["facet_fields"]["metadata.Geographic_NAME"], function(i,field){
         
         if(i%2==0)
           prev=String(field);
@@ -63,7 +63,7 @@ $.getJSON(fileName, function(json) {
 
 
 var margin = {top: 20, right: 20, bottom: 200, left: 60},
-    width = 800 - margin.left - margin.right,
+    width = 1650 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
 
 var x = d3.scale.ordinal()

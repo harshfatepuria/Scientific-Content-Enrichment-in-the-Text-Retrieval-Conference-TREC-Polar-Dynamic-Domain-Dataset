@@ -1,0 +1,76 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 1,
+    "params": {
+      "q": "metadata.measurement_unit:*",
+      "facet.field": "metadata.measurement_unit",
+      "indent": "true",
+      "start": "0",
+      "rows": "0",
+      "wt": "json",
+      "facet": "true",
+      "_": "1459561322220"
+    }
+  },
+  "response": {
+    "numFound": 296,
+    "start": 0,
+    "docs": []
+  },
+  "facet_counts": {
+    "facet_queries": {},
+    "facet_fields": {
+      "metadata.measurement_unit": [
+        "year",
+        267,
+        "percent",
+        83,
+        "kilometer",
+        48,
+        "week",
+        37,
+        "month",
+        32,
+        "day",
+        29,
+        "century",
+        23,
+        "hour",
+        22,
+        "meter",
+        20,
+        "degrees",
+        18,
+        "minute",
+        15,
+        "decade",
+        12,
+        "degreeC",
+        11,
+        "joule",
+        9,
+        "second",
+        8,
+        "season",
+        7,
+        "kelvin",
+        4,
+        "micron",
+        3,
+        "candela",
+        2,
+        "centimeter",
+        2,
+        "millimeter",
+        2,
+        "degreeF",
+        1
+      ]
+    },
+    "facet_dates": {},
+    "facet_ranges": {},
+    "facet_intervals": {},
+    "facet_heatmaps": {}
+  }
+}
