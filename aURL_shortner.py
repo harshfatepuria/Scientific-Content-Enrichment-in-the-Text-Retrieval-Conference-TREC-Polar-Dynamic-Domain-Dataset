@@ -18,11 +18,14 @@ for filepath in iglob(os.path.join(file, '*.json')):
         for i in data['files']:
             #Getting a unique md5 hash for the file path relative to the current directory
             d={}
+            mapping={}
+            mapping["metadata"]={}
             d['filePath']=i
             pathToFile= i.split('/')
             fp=open('urlShortnerOutput/'+pathToFile[-1]+'.json','w')
             s="polar.usc.edu/"+str(uuid.uuid4())[:8]
             d['shortURL']=s
+            mapping["metadata"]=d
             #Dumping JSON object with mapped shortened URLs and file path
             keys=json.dumps(d, sort_keys=True)
             fp.write(keys)
