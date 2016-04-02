@@ -10,6 +10,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 
+/**
+ * FileMarker helps marking the files that already finish parsing
+ * or files that cannot be parsed.
+ * Should speed up the execution when the program is re-run
+ * so it doesn't have to start everything over again
+ *
+ */
 public class FileMarker implements Closeable, AutoCloseable {
 	
 	private File markerFile;

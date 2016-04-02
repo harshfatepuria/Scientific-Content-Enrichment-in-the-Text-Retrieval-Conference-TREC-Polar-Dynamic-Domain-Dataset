@@ -13,6 +13,12 @@ import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.SAXException;
 
+/**
+ * 
+ * An abstract Tika parser based on text that Tika extracted from the documents.
+ * Provide a method to get the extracted text.
+ *
+ */
 public abstract class TikaExtractedTextBasedParser extends AbstractParser {
 	
 	/**
@@ -27,10 +33,27 @@ public abstract class TikaExtractedTextBasedParser extends AbstractParser {
 		return tika.getParser().getSupportedTypes(context);
 	}
 	
+	/**
+	 * Get text extracted text from the inputstream by Tika
+	 * @param stream inputstream of the document
+	 * @return text extracted from the document
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
 	public String getParsedText(InputStream stream) throws IOException, SAXException, TikaException {
 		return getParsedText(stream, new Metadata());
 	}
 	
+	/**
+	 * Get text extracted text and metadata from the inputstream by Tika
+	 * @param stream inputstream of the document
+	 * @param metadata the metadata object 
+	 * @return text extracted from the document
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
 	public String getParsedText(InputStream stream, Metadata metadata) throws IOException, SAXException, TikaException {
 		if (metadata == null) {
 			metadata = new Metadata();
@@ -56,11 +79,11 @@ public abstract class TikaExtractedTextBasedParser extends AbstractParser {
 		return sb.toString();
 	}
 	
-	public Tika getTika() {
+	protected Tika getTika() {
 		return tika;
 	}
 
-	public void setTika(Tika tika) {
+	protected void setTika(Tika tika) {
 		this.tika = tika;
 	}
 	

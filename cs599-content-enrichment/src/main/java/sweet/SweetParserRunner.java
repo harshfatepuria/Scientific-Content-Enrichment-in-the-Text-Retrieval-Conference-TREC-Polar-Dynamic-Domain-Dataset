@@ -16,6 +16,10 @@ import org.xml.sax.SAXException;
 
 import shared.AbstractParserRunner;
 
+/**
+ * Utility class to run SweetParser to all documents in a specified base folder
+ *
+ */
 public class SweetParserRunner extends AbstractParserRunner {
 	
 	private SweetParser sweetParser;

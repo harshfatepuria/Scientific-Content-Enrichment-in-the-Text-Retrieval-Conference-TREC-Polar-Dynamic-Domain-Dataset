@@ -13,6 +13,11 @@ import org.xml.sax.SAXException;
 import TTR.TTRAnalysis;
 import shared.TikaExtractedTextBasedParser;
 
+/**
+ * A parser implementation of Text-to-Tag Ratio analysis
+ * Extract text from document based on Text-to-Tag ratio
+ *
+ */
 public class TagRatioParser extends TikaExtractedTextBasedParser {
 
 	/**

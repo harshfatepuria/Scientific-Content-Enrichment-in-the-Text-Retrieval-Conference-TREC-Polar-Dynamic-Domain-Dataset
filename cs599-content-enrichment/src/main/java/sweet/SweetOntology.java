@@ -25,6 +25,13 @@ import org.openrdf.repository.util.Repositories;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.MemoryStore;
 
+/**
+ * RDF representation of SWEET Ontology
+ * Provide the ability to do fuzzy string matching on concepts and
+ * to query concept and relation (Triples)
+ * @author Bewilder
+ *
+ */
 public class SweetOntology {
 
 	private static SweetOntology instance;
@@ -46,7 +53,6 @@ public class SweetOntology {
 		repository.initialize();
 		loadOntology();
 		loadConcepts();
-//		loadPrefixs();
 		loadMeasurements();
 	}
 	
@@ -150,10 +156,18 @@ public class SweetOntology {
 		return conceptString == null ? null : conceptString.toLowerCase();
 	}
 	
+	/**
+	 * Get the best concept that match the query
+	 * The concept and the query should have edit distance not higher than default tolerance * length of the concept 
+	 */
 	public Optional<MatchedConcept> queryFirst(String query) {
 		return queryFirst(query, defaultTolerance);
 	}
 	
+	/**
+	 * Get the best concept that match the query
+	 * The concept and the query should have edit distance not higher than specified tolerance * length of the concept
+	 */
 	public Optional<MatchedConcept> queryFirst(String query, Float tolerance) {
 		List<MatchedConcept> list = query(query, tolerance);
 		
@@ -164,10 +178,18 @@ public class SweetOntology {
 		}
 	}
 	
+	/**
+	 * List all the concepts that match the query
+	 * The concepts and the query should have edit distance not higher than default tolerance * length of the concept 
+	 */
 	public List<MatchedConcept> query(String query) {
 		return query(query, defaultTolerance);
 	}
 	
+	/**
+	 * List all the concepts that match the query
+	 * The concept and the query should have edit distance not higher than specified tolerance * length of the concept
+	 */
 	public List<MatchedConcept> query(String query, Float tolerance) {
 		List<MatchedConcept> matched = new ArrayList<>();
 		concepts.forEach(c -> {
@@ -181,6 +203,9 @@ public class SweetOntology {
 		return matched.stream().sorted((a, b) -> Float.compare(a.distance, b.distance)).collect(Collectors.toList());
 	}
 	
+	/**
+	 * Query triples in the ontology that related to the concept
+	 */
 	public List<BindingSet> queryTriples(String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
@@ -193,6 +218,9 @@ public class SweetOntology {
 		}
 	}
 	
+	/**
+	 * Query concepts that recursively have relationship with specified concept
+	 */
 	public List<BindingSet> queryConceptThatRecursivelyHasRelationWith(String relation, String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
@@ -206,6 +234,9 @@ public class SweetOntology {
 		}
 	}
 	
+	/**
+	 * Query concepts that have relationship with firstRelation that recursively have relationship with specified concept
+	 */
 	public List<BindingSet> queryConceptThatRecursivelyHasRelationWith(String firstRelation, String optionalRelation, String concept) {
 		ValueFactory factory = repository.getValueFactory();
 		
@@ -219,6 +250,9 @@ public class SweetOntology {
 		}
 	}
 	
+	/**
+	 * Query concepts that specified concept has relationship with
+	 */
 	public List<BindingSet> queryConceptThatHasRelation(String concept, String relation) {
 		ValueFactory factory = repository.getValueFactory();
 		
@@ -234,7 +268,6 @@ public class SweetOntology {
 	
 	
 	/* Store all Measurement/Unit concepts */
-//	private List<Concept> prefixs;
 	private List<MeasurementConcept> measurements;
 	
 	private static String relaType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -400,6 +433,14 @@ public class SweetOntology {
 		System.out.println(measurements.size() + " measurements loaded");
 	}
 	
+	/**
+	 * Match a measurement related to two consecutive tokens
+	 * The process will use both exact and fuzzy string matching
+	 * on both and combined input string
+	 * @param p1
+	 * @param p2
+	 * @return matched measurement, null if not match
+	 */
 	public String matchMeasurement(String p1, String p2) {
 		p1 = p1.trim();
 		p2 = p2.trim();

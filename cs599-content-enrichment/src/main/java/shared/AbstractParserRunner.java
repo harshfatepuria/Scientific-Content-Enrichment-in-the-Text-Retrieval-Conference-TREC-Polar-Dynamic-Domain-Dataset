@@ -16,15 +16,27 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Utility class to run specific parsers to all the documents in a folder.
+ * 
+ */
 public abstract class AbstractParserRunner {
 	private String baseFolder;
 	private String resultFolder;
 	private String markerFile;
 	private boolean overwriteResult = false;
+	private Long fileSizeLimit = Long.valueOf(2*1024*1024);
+	
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	private URI baseFolderUri;
 	
+	/**
+	 * Run the parser to all documents in the folder according to setting
+	 * @return list of path that are parsed successfully
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public List<String> runParser() throws IOException, Exception {
 		List<String> successPath = new ArrayList<>();
 		final FileMarker fileMarker = markerFile == null ? null :  new FileMarker(new File(markerFile));
@@ -58,8 +70,7 @@ public abstract class AbstractParserRunner {
 				return;
 			}
 			
-			/* temporary ignore large files  */
-			if (path.toFile().length() > (2*1024*1024)) {
+			if (getFileSizeLimit() != null && path.toFile().length() > getFileSizeLimit()) {
 				return;
 			}
 			
@@ -106,16 +117,121 @@ public abstract class AbstractParserRunner {
 		return successPath;
 	}
 	
+	/**
+	 * get file object that represent the result file of a specific document path
+	 * @param path
+	 * @return file object that represent the result file
+	 */
 	protected File getResultFile(Path path) {
 		return getResultFile(path, "");
 	}
 	
+	/**
+	 * get file object that represent the result file of a specific document path by append a suffix
+	 * @param path
+	 * @return file object that represent the result file
+	 */
 	protected File getResultFile(Path path, String suffix) {
 		return new File(resultFolder, getRelativePath(path) + suffix);
 	}
 
+	/**
+	 * Abstract method, for parsing a document
+	 * @param path path to the documents
+	 * @param resultFile file object that represent the result file
+	 * @return true if the file is parsed successfully 
+	 * @throws Exception
+	 */
 	protected abstract boolean parse(Path path, File resultFile) throws Exception;
+		
+	/**
+	 * Get the file size limit in bytes (default: 2MB)
+	 * @return file size limit in bytes
+	 */
+	public Long getFileSizeLimit() {
+		return fileSizeLimit;
+	}
+
+	/**
+	 * Set the file size limit, unlimited if set to null
+	 * @param fileSizeLimit
+	 */
+	public void setFileSizeLimit(Long fileSizeLimit) {
+		this.fileSizeLimit = fileSizeLimit;
+	}
 	
+	/**
+	 * Get the base folder for documents to be parsed
+	 * @return base folder
+	 */
+	public String getBaseFolder() {
+		return baseFolder;
+	}
+	
+	/**
+	 * Set the base folder for documents to be parsed
+	 * @param baseFolder
+	 */
+	public void setBaseFolder(String baseFolder) {
+		this.baseFolder = baseFolder;
+		baseFolderUri = Paths.get(baseFolder).toUri();
+	}
+	
+	/**
+	 * Get the base folder to keep the result files
+	 * @return
+	 */
+	public String getResultFolder() {
+		return resultFolder;
+	}
+	
+	/**
+	 * Set the base folder to keep the result files
+	 * @param resultFolder
+	 */
+	public void setResultFolder(String resultFolder) {
+		this.resultFolder = resultFolder;
+	}
+	
+	/**
+	 * Get the marker file
+	 * @return
+	 */
+	public String getMarkerFile() {
+		return markerFile;
+	}
+	
+	/**
+	 * Set the marker file, set to null if you don't want to use marker file
+	 * Marker file will help the program not to do the parsing on already parsed files
+	 * or files that it cannot parse when you re-run the program
+	 * @param markerFile
+	 */
+	public void setMarkerFile(String markerFile) {
+		this.markerFile = markerFile;
+	}
+	
+	/**
+	 * To see whether the program should overwrite existing result files or not
+	 * @return
+	 */
+	public boolean isOverwriteResult() {
+		return overwriteResult;
+	}
+	
+	/**
+	 * Set whether you want to overwrite existing result files or not
+	 * @param overwriteResult
+	 */
+	public void setOverwriteResult(boolean overwriteResult) {
+		this.overwriteResult = overwriteResult;
+	}
+	
+	/**
+	 * Filtering rule for documents
+	 * @param path path to the documents
+	 * @return true if the document is allowed to be parsed
+	 */
 	protected boolean isAllowProcessing(Path path) {
 		return true;
 	}
@@ -123,40 +239,21 @@ public abstract class AbstractParserRunner {
 	protected InputStream getInputStream(Path path) throws FileNotFoundException {
 		return new FileInputStream(path.toFile());
 	}
-	
+
+	/**
+	 * Get relative path of a document from specified base folder
+	 * @param path
+	 * @return relative path of a document
+	 */
 	protected String getRelativePath(Path path) {
 		return baseFolderUri.relativize(path.toUri()).toString();
 	}
-	
-	public String getBaseFolder() {
-		return baseFolder;
-	}
-	public void setBaseFolder(String baseFolder) {
-		this.baseFolder = baseFolder;
-		baseFolderUri = Paths.get(baseFolder).toUri();
-	}
-	public String getResultFolder() {
-		return resultFolder;
-	}
-	public void setResultFolder(String resultFolder) {
-		this.resultFolder = resultFolder;
-	}
-	public String getMarkerFile() {
-		return markerFile;
-	}
-	public void setMarkerFile(String markerFile) {
-		this.markerFile = markerFile;
-	}
-	public boolean isOverwriteResult() {
-		return overwriteResult;
-	}
-	public void setOverwriteResult(boolean overwriteResult) {
-		this.overwriteResult = overwriteResult;
-	}
-	public Gson getGson() {
+
+	protected Gson getGson() {
 		return gson;
 	}
-	public void setGson(Gson gson) {
+	
+	protected void setGson(Gson gson) {
 		this.gson = gson;
 	}
 	

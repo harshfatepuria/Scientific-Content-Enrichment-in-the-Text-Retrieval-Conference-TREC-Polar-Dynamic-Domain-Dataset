@@ -20,6 +20,11 @@ import org.xml.sax.SAXException;
 import shared.TikaExtractedTextBasedParser;
 import sweet.SweetOntology.MatchedConcept;
 
+/**
+ * A parser to extract concept defined in SWEET Ontology that appears in the document text
+ * It it done using Named Entity extraction and fuzzy string matching to the ontology
+ *
+ */
 public class SweetParser extends TikaExtractedTextBasedParser {
 
 	/**
@@ -54,6 +59,11 @@ public class SweetParser extends TikaExtractedTextBasedParser {
         xhtml.endDocument();
 	}
 	
+	/**
+	 * Get all entities using Stanford CoreNLP NERecognizer
+	 * @param text
+	 * @return
+	 */
 	private List<String> getEntitiesUsingNER(String text) {
 		Map<String, Set<String>> nerResult = getNERecogniser().recognise(text);
 		Set<String> querySet = new HashSet<String>();;

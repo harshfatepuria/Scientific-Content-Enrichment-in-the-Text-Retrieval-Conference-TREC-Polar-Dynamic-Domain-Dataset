@@ -22,6 +22,14 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import shared.TikaExtractedTextBasedParser;
 import sweet.SweetOntology;
 
+/**
+ * A parser to extract measurement from document text
+ * The parser will employ TagRatioParser to get relevant text. 
+ * Then tokenizes the text to get number represented in the text.
+ * The parser then extract the number and its two following word tokens
+ * and try to match them with Units concept defined in SWEET Ontology and some predefined symbols 
+ *
+ */
 public class MeasurementParser extends TikaExtractedTextBasedParser {
 
 	/**
@@ -36,10 +44,19 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 	private boolean extractDumpData = false;
 	
 	
+	/**
+	 * get whether the parser should include its dump data in the result files
+	 * @return
+	 */
 	public boolean isExtractDumpData() {
 		return extractDumpData;
 	}
 
+	/**
+	 * Tell the parser whether it should include its dump data in the result files
+	 * Dump data maybe useful for observation to improve extraction performance
+	 * @param extractDumpData
+	 */
 	public void setExtractDumpData(boolean extractDumpData) {
 		this.extractDumpData = extractDumpData;
 	}
@@ -88,6 +105,7 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
         xhtml.endDocument();
 	}
 	
+	
 	private String getTextFromTagRatioParser(InputStream stream, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
 		TagRatioParser parser = new TagRatioParser();
 		BodyContentHandler handler = new BodyContentHandler();
@@ -96,6 +114,11 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return handler.toString();
 	}
 	
+	/**
+	 * Do tokenization using Stanford CoreNLP DocumentPreprocessor 
+	 * @param text
+	 * @return
+	 */
 	private List<String> tokenize(String text) {
 		List<String> list = new ArrayList<>();
 		
@@ -109,6 +132,11 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return list;
 	}
 	
+	/**
+	 * Extract number from each token using Stanford CoreNLP NumberNormalizer
+	 * @param tokens
+	 * @return
+	 */
 	private List<BigDecimal> extractNumbers(List<String> tokens) {
 		List<BigDecimal> result = new ArrayList<>();
 		
@@ -128,6 +156,13 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return result;
 	}
 	
+	/**
+	 * Combined adjacent tokens that are consider numbers
+	 * These token maybe parts of only one number so it should be treated as one token
+	 * @param tokens
+	 * @param nums
+	 * @return
+	 */
 	private List<StringAndNumber> fixAdjacentNumber(List<String> tokens, List<BigDecimal> nums) {
 		int i = 0;
 		List<StringAndNumber> result = new ArrayList<>();
@@ -158,6 +193,12 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return result;
 	}
 	
+	/**
+	 * Extracted number and its two following tokens
+	 * @param tokens
+	 * @param nums
+	 * @return
+	 */
 	private List<Number3Gram> extractNumbers3Gram(List<String> tokens, List<BigDecimal> nums) {
 		List<Number3Gram> result = new ArrayList<>();
 		
@@ -216,48 +257,6 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 		return convertToNumber(word);
 	}
 	
-	/*
-	private Set<String> confuseWords = new HashSet<>(Arrays.asList("for", "our", "height", "file"));
-	private BigDecimal convertToNumber(String word, String nextWord) {
-		
-		if (NumberUtils.isNumber(word)) {
-			try {
-				return new BigDecimal(word);
-			} catch (Exception e) {
-				return BigDecimal.valueOf(NumberUtils.toDouble(word));
-			}
-		}
-		
-		if ("zero".equalsIgnoreCase(word)) {
-			return BigDecimal.ZERO;
-		}
-	
-		if (confuseWords.contains(word.toLowerCase())) {
-			return null;
-		}
-		
-		if (!"eight".equalsIgnoreCase(word) && word.toLowerCase().indexOf("ight") == 1) {
-			return null;
-		}
-		
-		if (!"four".equalsIgnoreCase(word) && word.toLowerCase().indexOf("our") == 1) {
-			return null;
-		}
-		
-		String num = QuantifiableEntityNormalizer.normalizedNumberString(word, nextWord, null);
-		if (num == null || "0.0".equals(num)) {
-			return null;
-		}
-		
-		try {
-			return new BigDecimal(num);
-		} catch (Exception e) {
-			System.out.println(num);
-			e.printStackTrace();
-			return null;
-		}
-	}
-	*/
 	
 	private class Number3Gram {
 		BigDecimal number;

@@ -5,6 +5,11 @@ import java.nio.file.Path;
 
 import org.apache.tika.Tika;
 
+/**
+ * Subclass of AbstractParserRunner
+ * provide a method to limit parsing to some file type
+ *
+ */
 public abstract class AbstractTypeLimitParserRunner extends AbstractParserRunner {
 
 	private Tika tika = new Tika();

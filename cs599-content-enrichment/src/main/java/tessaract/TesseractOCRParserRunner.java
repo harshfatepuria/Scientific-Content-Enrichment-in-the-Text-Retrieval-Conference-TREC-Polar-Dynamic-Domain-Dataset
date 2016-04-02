@@ -14,6 +14,10 @@ import org.apache.tika.mime.MediaType;
 
 import shared.AbstractTypeLimitParserRunner;
 
+/**
+ * Utility class to run TesseractOCRParser to all documents in specified base folder
+ *
+ */
 public class TesseractOCRParserRunner extends AbstractTypeLimitParserRunner {
 
 	

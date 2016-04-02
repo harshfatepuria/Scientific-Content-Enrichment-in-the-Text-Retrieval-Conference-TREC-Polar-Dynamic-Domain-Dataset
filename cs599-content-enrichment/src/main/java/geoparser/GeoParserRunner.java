@@ -16,6 +16,10 @@ import org.xml.sax.SAXException;
 
 import shared.AbstractParserRunner;
 
+/**
+ * Utility class to run GeoParser on all files in a specified base folder
+ *
+ */
 public class GeoParserRunner extends AbstractParserRunner {
 	private GeoWrapperParser geoParser;
 	
@@ -73,65 +77,4 @@ public class GeoParserRunner extends AbstractParserRunner {
         
 		return metadata;
 	}
-	
-	/*
-	public List<String> parse1() throws IOException {
-		URI baseFolderUri = Paths.get(baseFolder).toUri();
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		List<String> successPath = new ArrayList<>();
-		ExecutorService executor = Executors.newWorkStealingPool(numberOfThread);
-		
-		Files.walk(Paths.get(baseFolder))
-			.filter(Files::isRegularFile)
-			.forEach(path -> {
-				String relativePath = baseFolderUri.relativize(path.toUri()).toString();
-				File jsonFile = new File(resultFolder, relativePath + ".geodata");
-				
-				if (jsonFile.exists()) {
-					return;
-				}
-				
-				Runnable task = () -> {
-					try {
-						Metadata metadata = parseFile(path.toFile());
-						if (metadata.get("Geographic_NAME") == null) {
-							return;
-						}
-						
-						GeoData geoData = new GeoData(relativePath, metadata);
-						
-						String json = gson.toJson(geoData);
-						
-						jsonFile.getParentFile().mkdirs();
-						try(PrintWriter out = new PrintWriter(jsonFile)) {
-							out.print(json);
-						}
-						
-						successPath.add(relativePath);
-					} catch (Exception e) {
-						System.out.println(path.toString());
-					}
-				};
-				
-				executor.submit(task);
-			});
-		
-		try {
-			System.out.println("attempt to shutdown executor");
-			executor.shutdown();
-			executor.awaitTermination(7, TimeUnit.DAYS);
-		} catch (InterruptedException e) {
-		    System.err.println("tasks interrupted");
-		}
-		finally {
-		    if (!executor.isTerminated()) {
-		        System.err.println("cancel non-finished tasks");
-		    }
-		    executor.shutdownNow();
-		    System.out.println("shutdown finished");
-		}
-		
-		return successPath;
-	}
-	*/
 }

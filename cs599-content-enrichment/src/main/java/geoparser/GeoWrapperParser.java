@@ -15,11 +15,13 @@ import org.xml.sax.SAXException;
 
 import shared.TikaExtractedTextBasedParser;
 
+/**
+ * A wrapper for org.apache.tika.parser.geo.topic.GeoParser
+ * To make it able to take Tika extracted text as input
+ * 
+ */
 public class GeoWrapperParser extends TikaExtractedTextBasedParser {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4050364333648695218L;
 
 	private GeoParser geoParser;
