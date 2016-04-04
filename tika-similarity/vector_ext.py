@@ -21,9 +21,9 @@ import math, editdistance
 
 def stringify(attribute_value):
     if isinstance(attribute_value, list):
-        return str((", ".join(attribute_value)).encode('utf-8').strip())
+        return str((", ".join(isinstance(x, basestring) and x or str(x) for x in attribute_value)).encode('utf-8').strip())
     else:
-        return str(attribute_value.encode('utf-8').strip())
+        return isinstance(attribute_value, basestring) and str(attribute_value.encode('utf-8').strip()) or str(attribute_value)
 
 
 class Vector:
@@ -37,19 +37,23 @@ class Vector:
         Create a vector
         @param metadata features 
         '''
+        self.allFeatures = features
         self.features = {}
         self.featuresText = {}
         
         if filename and features:
             self.filename = filename
+            self.prepareFeatures(features)
+            self.featureSet = frozenset(self.features.keys())
+    
+    def prepareFeatures(self, features):
+        for na in self.na_metadata:
+            features.pop(na, None)
             
-            for na in self.na_metadata:
-                features.pop(na, None)
-            
-            for key in features:
-                self.features[key] = len(stringify(features[key]))
-                self.featuresText[key] = stringify(features[key])
-
+        for key in features:
+            self.features[key] = len(stringify(features[key]))
+            self.featuresText[key] = stringify(features[key])
+        
     '''
     def __str__(self):        
         vector_str = "( {0} ): \n".format(self.)
@@ -85,8 +89,15 @@ class Vector:
         cosTheta = (V1.V2) / (|V1| |V2|)
         cos 0 = 1 implies identical documents
         '''
-        return self.dotProduct(v2) / (self.getMagnitude() * v2.getMagnitude())
+        div = (self.getMagnitude() * v2.getMagnitude())
+        
+        if (div == 0):
+            return 0
+        
+        return self.dotProduct(v2) / div
 
+    def cosine_dist(self, v2):
+        return 1 - self.cosTheta(v2)
 
     def euclidean_dist(self, anotherVector):
         '''
@@ -109,7 +120,8 @@ class Vector:
         return math.sqrt(dist_sum)
     
     def edit_dist(self, anotherVector):
-        intersect_features = set(self.features.keys()) & set(anotherVector.features.keys())                
+#         intersect_features = set(self.features.keys()) & set(anotherVector.features.keys())
+        intersect_features = self.featureSet.intersection(anotherVector.featureSet)                
         intersect_features = [feature for feature in intersect_features if feature not in self.na_metadata ]
         
         file_edit_distance = 0.0
@@ -132,3 +144,53 @@ class Vector:
         
         file_edit_distance /= count
         return file_edit_distance
+    
+    def jaccard_sim(self, anotherVector):
+        unionNum = len(self.featureSet.union(anotherVector.featureSet))
+        intersectNum = len(self.featureSet.intersection(anotherVector.featureSet))
+        return float(intersectNum) / float(unionNum)
+    
+    def jaccard_dist(self, anotherVector):
+        return 1 - self.jaccard_sim(anotherVector)
+        
+    
+    def printFeatures(self):
+        print "["
+        print "filename : " , self.filename
+        for key in self.features:
+            print key, " : " , self.features[key]
+        print "]"
+
+class GeoVector(Vector):
+    def prepareFeatures(self, features):
+        self.features["metadata.Geographic_LATITUDE"] = features["metadata.Geographic_LATITUDE"][0]
+        self.features["metadata.Geographic_LONGITUDE"] = features["metadata.Geographic_LONGITUDE"][0]
+
+class SweetVector(Vector):
+    def prepareFeatures(self, features):
+        concepts = features["metadata.sweet_concept"]
+        for concept in concepts:
+            self.features[concept] = 1
+            
+class MeasurementVector(Vector):
+    def prepareFeatures(self, features):
+        values = features["metadata.measurement_value"]
+        units = features["metadata.measurement_unit"]
+        
+        mapping = {}
+        for idx, val in enumerate(units):
+            if not mapping.has_key(val):
+                mapping[val] = []
+            mapping[val].append(values[idx])
+        
+        for key, vals in mapping.iteritems():
+            avg = reduce(lambda x, y: x+y, vals) / len(vals)
+#             print key, " | ", vals, " | ", avg
+            self.features[key] = avg
+
+class GrobidVector(Vector):
+    def prepareFeatures(self, features):
+        for key in features:
+            if (key.startswith("metadata.RelatedPublications") and (key.endswith("title") or key.endswith("author"))) or key.startswith("metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author"):
+                self.features[key] = len(stringify(features[key]))
+                self.featuresText[key] = stringify(features[key])

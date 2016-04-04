@@ -66,7 +66,10 @@ p {
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
-clusterJson = d3.json("clusters.json", function(error, root){
+var urlpath=document.URL;
+var indexOfEquals=urlpath.indexOf("=");
+var path = "" + urlpath.substring(indexOfEquals+1) + "/"
+clusterJson = d3.json(path + "clusters.json", function(error, root){
 var i = 0;
 function visit(parent, visitFn, childrenFn) {
   if (!parent) return;

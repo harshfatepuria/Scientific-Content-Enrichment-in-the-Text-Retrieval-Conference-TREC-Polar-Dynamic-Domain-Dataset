@@ -18,8 +18,8 @@
 #
 
 from tika import parser
-from vector import Vector
-from random import randint
+from vector_ext import Vector
+from random import randint, sample
 import argparse, os, csv, itertools, copy, json, sys
 
 union_features = set()
@@ -44,23 +44,23 @@ def filterFiles(inputDir, acceptTypes):
 
 def compute_Mean(list_of_points):
     
-    if distanceCalc == calcEuclidian:
-        new_centroid = Vector()
-        for feature in union_features:
-    
-            dimension_sum = 0.0
-            for point in list_of_points:
-                try:
-                    dimension_sum += point.features[feature]
-                except KeyError:
-                    continue                
-            new_centroid.features[feature] = float(dimension_sum)/len(list_of_points)
-
-    else:
-        new_centroid = chooseClustroid(list_of_points)
-        
-    return new_centroid
-
+#     if distanceCalc == calcEuclidian:
+#         new_centroid = Vector()
+#         for feature in union_features:
+#     
+#             dimension_sum = 0.0
+#             for point in list_of_points:
+#                 try:
+#                     dimension_sum += point.features[feature]
+#                 except KeyError:
+#                     continue                
+#             new_centroid.features[feature] = float(dimension_sum)/len(list_of_points)
+# 
+#     else:
+#         new_centroid = chooseClustroid(list_of_points)
+    new_centroid = chooseClustroid(list_of_points)
+    return new_centroid	
+	
 #select a point which has lowest average distance to other points in the cluster
 def chooseClustroid(points):
     
@@ -71,15 +71,11 @@ def chooseClustroid(points):
         sumDistance = 0
         for q in points:
             sumDistance += calculateDistance(p, q)
-        sumDistance /= (len(points) - 1)
+        sumDistance /= (len(points))
         
         if sumDistance < minDistance:
             clustroid = p
             minDistance = sumDistance
-        
-        #trade-off absolute correctness to speed up
-#         if minDistance < 0.1:
-#             break
     
     return clustroid
 
@@ -99,7 +95,11 @@ def cluster_assignment(list_of_points, centroids):
         except KeyError:
             clusters[distances.index(min(distances))] = []
             clusters[distances.index(min(distances))].append(point)
-                 
+    
+#     print "[",
+#     for (k, c) in clusters.iteritems():
+#         print k , "-", len(c), ", "
+#     print "]"
     return clusters
 
 
@@ -113,49 +113,7 @@ def move_centroid(clusters):
 
     return new_centroids
 
-
-def K_Means(list_of_points, no_centroids):
-    
-    centroids = []
-
-    for i in range(no_centroids):
-        centroids.append(Vector())
-
-    for centroid in centroids:
-        random_point = list_of_points[randint(0, (len(list_of_points)-1) )]
-
-        centroid.filename = random_point.filename
-        centroid.features = copy.deepcopy(random_point.features)
-        centroid.featuresText = copy.deepcopy(random_point.featuresText)
-    
-        
-    clusters = cluster_assignment(list_of_points, centroids)
-
-    # generates different clusters each time
-    # leverage the same "Dongni" compute-clusters.py
-    for i in range(0, 300):             # perform iterations till convergence global minima    # default 300
-
-        new_centroids =  move_centroid(clusters)     #'''centroids vs new_centroids, use centroids again???'''
-
-        clusters = cluster_assignment(list_of_points, new_centroids)   #''' #old_clusters = first_clusters '''
-
-    ''' pseudocode 
-    # clusters =>   converged / recent values of clusters???
-    # new_centroids => recent value of c
-    '''
-    #print clusters
-
-    # compute & return distortion (new_centroids, clusters)
-
-    distortion_sum = 0.0
-    for key in clusters:
-        for point in clusters[key]:
-            distortion_sum += calculateDistance(point, new_centroids[key])
-    distortion = distortion_sum / float(len(list_of_points))
-
-    return [distortion, clusters]
-    
-
+	
 def calculateDistance(v1, v2):    
     if not hasattr(v2, 'filename'):
         return distanceCalc(v1, v2)
@@ -174,11 +132,128 @@ def calcEuclidian(v1, v2):
     return v1.euclidean_dist(v2)
 
 def calcCosine(v1, v2):
-    return 1 - v1.cosTheta(v2)
+    return v1.cosine_dist(v2)
 
 def calcEdit(v1, v2):
-    return v1.edit_dist(v2)
+    return v1.edit_dist(v2)	
 
+def calcJaccard(v1, v2):
+    return v1.jaccard_dist(v2)
+	
+def K_Means(list_of_points, no_centroids):
+    centroids = []
+    
+    randCentroid = sample(range(0, len(list_of_points)), no_centroids)
+    for i in randCentroid:
+        centroids.append(list_of_points[i])
+#         print list_of_points[i].features
+    
+    
+#     for i in range(no_centroids):
+#         centroids.append(Vector())
+# 
+#     for centroid in centroids:
+#         random_point = list_of_points[randint(0, (len(list_of_points)-1) )]
+#         centroid.filename = random_point.filename
+#         centroid.features = copy.deepcopy(random_point.features)
+#         centroid.featuresText = copy.deepcopy(random_point.featuresText)
+    
+    
+        
+    clusters = cluster_assignment(list_of_points, centroids)
+
+    # generates different clusters each time
+    # leverage the same "Dongni" compute-clusters.py
+    for i in range(0, 300):             # perform iterations till convergence global minima    # default 300
+
+        new_centroids =  move_centroid(clusters)     #'''centroids vs new_centroids, use centroids again???'''
+        clusters = cluster_assignment(list_of_points, new_centroids)   #''' #old_clusters = first_clusters '''
+
+    ''' pseudocode 
+    # clusters =>   converged / recent values of clusters???
+    # new_centroids => recent value of c
+    '''
+    #print clusters
+    # compute & return distortion (new_centroids, clusters)
+
+    distortion_sum = 0.0
+    for key in clusters:
+        for point in clusters[key]:
+            distortion_sum += calculateDistance(point, new_centroids[key])
+    distortion = distortion_sum / float(len(list_of_points))
+
+    return [distortion, clusters]
+    
+distanceCache = {}
+distanceCalc = calcEuclidian
+
+def K_Means_iter(list_of_points, measure, inputK=None, dCache=None):
+    global distanceCache
+    global distanceCalc
+    
+    if dCache is None:
+        distanceCache = {}
+    else:
+        distanceCache = dCache
+    distanceCalc = calcEuclidian
+    distanceCalcName = "Euclidean Distance"
+    
+    if measure:
+        if measure == 1:
+            distanceCalc = calcCosine
+            distanceCalcName = "Cosine Distance"
+        elif measure == 2:
+            distanceCalc = calcEdit
+            distanceCalcName = "Edit Distance"
+        elif measure == 3:
+            distanceCalc = calcJaccard
+            distanceCalcName = "Jaccard Distance"
+    
+    print "Clustering using " + distanceCalcName
+    
+    global_minimas = []
+    
+    if inputK is None:
+        kRange = range(2, 6)
+        for k in kRange:
+            global_minima = K_Means(list_of_points, k)
+    
+            for i in range(0, 50):
+                iteration = K_Means(list_of_points, k)
+                print "k= " , k , " iteration ", i
+                    
+                if iteration[0] < global_minima[0]:
+                    global_minima = iteration
+    
+            global_minimas.append(global_minima)
+    
+            
+        distortion_diffs = []
+        for i in range(0, (len(global_minimas)-1) ):
+            print "k =", kRange[i],"distortion value", global_minimas[i][0]
+            distortion_diffs.append((global_minimas[i][0] - global_minimas[i+1][0]))
+    
+        print "k =", kRange[i+1],"distortion value", global_minimas[i+1][0]
+    
+    
+        chosen_k = distortion_diffs.index(max(distortion_diffs)) + 1 
+        true_global_minima = global_minimas[chosen_k]
+    
+        print "Based on change in distortion value, Chosen k =", kRange[chosen_k]
+        return true_global_minima
+    
+    else:
+        global_minima = K_Means(list_of_points, inputK)
+    
+        for i in range(0, 50):
+            iteration = K_Means(list_of_points, inputK)
+            print "k= " , inputK , " iteration ", i
+                    
+            if iteration[0] < global_minima[0]:
+                global_minima = iteration
+    
+        return global_minima
+    
 if __name__ == "__main__":
 
     argParser = argparse.ArgumentParser('K-means Clustering of metadata values')
@@ -187,20 +262,6 @@ if __name__ == "__main__":
     argParser.add_argument('--accept', nargs='+', type=str, help='Optional: compute similarity only on specified IANA MIME Type(s)')
     argParser.add_argument('--measure', type=int, help='Optional: 0 - Euclidean, 1 - Cosine, 2 - Edit (default: 0)')
     args = argParser.parse_args()
-    
-    distanceCache = {}
-    distanceCalc = calcEuclidian
-    distanceCalcName = "Euclidean Distance"
-    
-    if args.measure:
-        if args.measure == 1:
-            distanceCalc = calcCosine
-            distanceCalcName = "Cosine Distance"
-        elif args.measure == 2:
-            distanceCalc = calcEdit
-            distanceCalcName = "Edit Distance"
-    
-    print "Clustering using " + distanceCalcName
     
 
     if args.inputDir:# and args.outJSON:
@@ -217,36 +278,7 @@ if __name__ == "__main__":
         for point in list_of_points:
             union_features |= set(point.features.keys())
 
-        
-        global_minimas = []
-        for k in range(2, 5):
-            global_minima = K_Means(list_of_points, k)
-
-            for i in range(0, 50):
-                iteration = K_Means(list_of_points, k)
-                print "k= " , k , " iteration ", i
-                
-                if iteration[0] < global_minima[0]:
-                    global_minima = iteration
-
-            global_minimas.append(global_minima)
-
-        
-        
-        distortion_diffs = []
-        for i in range(0, (len(global_minimas)-1) ):
-            
-            print "k =", (i+2),"distortion value", global_minimas[i][0]
-            distortion_diffs.append((global_minimas[i][0] - global_minimas[i+1][0]))
-
-        print "k =", (i+3),"distortion value", global_minimas[i+1][0]
-
-
-        chosen_k = distortion_diffs.index(max(distortion_diffs)) + 1 
-        true_global_minima = global_minimas[chosen_k]
-
-        print "Based on change in distortion value, Chosen k =", (chosen_k+2)
-
+        true_global_minima = K_Means_iter(list_of_points)   
 
         with open("clusters.json", "w") as jsonF:
 

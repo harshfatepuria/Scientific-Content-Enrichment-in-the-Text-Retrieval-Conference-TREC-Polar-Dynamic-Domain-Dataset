@@ -66,8 +66,11 @@ p {
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
+var urlpath=document.URL;
+var indexOfEquals=urlpath.indexOf("=");
+var path = "" + urlpath.substring(indexOfEquals+1) + "/"
 
-clusterJson = d3.json("clusters.json", function(error, data){
+clusterJson = d3.json(path + "clusters.json", function(error, data){
   var root = data;
   var radius = 960/2;
       

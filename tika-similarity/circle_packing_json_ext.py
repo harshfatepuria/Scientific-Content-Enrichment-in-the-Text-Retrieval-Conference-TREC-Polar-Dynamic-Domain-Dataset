@@ -20,6 +20,7 @@
 import json
 import sys
 import ast
+import solr_metadata_cluster as mc
 from collections import Counter
 
 def main(argv = None):
@@ -53,7 +54,9 @@ def packCluster(fileList):
 
 def extractMetadataList(metadataStr):
     metadata = json.loads(metadataStr)
-    return metadata.keys()
+    v = mc.createVector(metadata, sys.argv[1])
+    
+    return v.features.keys()
 
 
 if __name__ == "__main__":

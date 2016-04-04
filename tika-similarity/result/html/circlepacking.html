@@ -36,7 +36,11 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(2,2)");
 
-d3.json("circle.json", function(error, root) {
+var urlpath=document.URL;
+var indexOfEquals=urlpath.indexOf("=");
+var path = "" + urlpath.substring(indexOfEquals+1) + "/"
+	
+d3.json(path + "circle.json", function(error, root) {
   var node = svg.datum(root).selectAll(".node")
       .data(pack.nodes)
     .enter().append("g")
