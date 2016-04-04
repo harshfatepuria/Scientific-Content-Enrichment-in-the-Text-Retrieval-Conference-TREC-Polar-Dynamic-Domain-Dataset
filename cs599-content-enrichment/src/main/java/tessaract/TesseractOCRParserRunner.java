@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MediaType;
 
+import cbor.CborDocument;
 import shared.AbstractTypeLimitParserRunner;
 
 /**
@@ -52,8 +53,8 @@ public class TesseractOCRParserRunner extends AbstractTypeLimitParserRunner {
 	}
 
 	@Override
-	protected boolean parse(Path path, File resultFile) throws Exception {
-		String text = tika.parseToString(path);
+	protected boolean parse(Path path, String relativePath, File resultFile, CborDocument cborDoc) throws Exception {
+		String text = cborDoc == null ? tika.parseToString(path) : tika.parseToString(cborDoc.getInputStream());
 		text = text.trim();
 		
 		if (text.length() > 0) {
@@ -67,8 +68,8 @@ public class TesseractOCRParserRunner extends AbstractTypeLimitParserRunner {
 	}
 	
 	@Override
-	protected File getResultFile(Path path) {
-		return super.getResultFile(path, ".tesseract");
+	protected File getResultFile(String relativePath) {
+		return super.getResultFile(relativePath, ".tesseract");
 	}
 
 }

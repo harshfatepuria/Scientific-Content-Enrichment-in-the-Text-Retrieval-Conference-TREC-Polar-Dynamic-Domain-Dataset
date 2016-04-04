@@ -2,14 +2,13 @@ package TTR;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.ToXMLContentHandler;
+import org.apache.tika.sax.ToHTMLContentHandler;
 import org.jsoup.Jsoup;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -27,7 +26,7 @@ public class TTRAnalysis
 	
 	public static String parseBodyToHTML(InputStream stream) throws IOException, SAXException, TikaException {
 //	    ContentHandler handler = new BodyContentHandler(new ToXMLContentHandler());
-	    ContentHandler handler = new ToXMLContentHandler();
+	    ContentHandler handler = new ToHTMLContentHandler();
 		 
 	    AutoDetectParser parser = new AutoDetectParser();
 	    Metadata metadata = new Metadata();

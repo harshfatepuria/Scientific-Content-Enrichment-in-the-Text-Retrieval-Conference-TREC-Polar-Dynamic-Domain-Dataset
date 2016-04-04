@@ -70,7 +70,6 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 //		String text = sampleText;
 		String text = getTextFromTagRatioParser(stream, metadata, context);
 		
-		
 		if (text != null && text.length() > 0) {
 			List<String> tokens = tokenize(text);
 			List<BigDecimal> nums = extractNumbers(tokens);
@@ -86,7 +85,6 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 				if(extractedMeasurement != null) {
 					metadata.add("measurement_value", n3gram.number.toString());
 					metadata.add("measurement_unit", extractedMeasurement);
-					
 					String extractedText = n3gram.number.toString() + " " + extractedMeasurement;
 					metadata.add("measurement_extractedText", extractedText);
 					if (isExtractDumpData()) {
@@ -108,7 +106,7 @@ public class MeasurementParser extends TikaExtractedTextBasedParser {
 	
 	private String getTextFromTagRatioParser(InputStream stream, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
 		TagRatioParser parser = new TagRatioParser();
-		BodyContentHandler handler = new BodyContentHandler();
+		BodyContentHandler handler = new BodyContentHandler(-1);
 		parser.parse(stream, handler, metadata, context);
 		
 		return handler.toString();

@@ -3,6 +3,7 @@ package shared;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -12,9 +13,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import cbor.CborDocument;
+import cbor.CborReader;
 
 /**
  * Utility class to run specific parsers to all the documents in a folder.
@@ -26,6 +31,7 @@ public abstract class AbstractParserRunner {
 	private String markerFile;
 	private boolean overwriteResult = false;
 	private Long fileSizeLimit = Long.valueOf(2*1024*1024);
+	private boolean cborFormat;
 	
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
@@ -74,8 +80,18 @@ public abstract class AbstractParserRunner {
 				return;
 			}
 			
-			File resultFile = getResultFile(path);
 			String relativePath = getRelativePath(path);
+			CborDocument cborDoc = null;
+			
+			if (isDocumentsInCborFormat()) {
+				try {
+					cborDoc = CborReader.read(path.toFile());
+					relativePath = cborDoc.getRelativePath();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			File resultFile = getResultFile(relativePath);
 
 			lastProcess[0] = relativePath;
 			
@@ -91,7 +107,21 @@ public abstract class AbstractParserRunner {
 
 			try {
 				if (overwriteResult || !resultFile.exists()) {
-					boolean success = parse(path, resultFile);
+					boolean success = false;
+					
+					if (cborDoc != null) {
+						success = parse(path, relativePath, resultFile, cborDoc);
+						
+						if (resultFile.exists()) {
+							File out = new File(getResultFolder(), cborDoc.getRelativePath());
+							out.getParentFile().mkdirs();
+							FileOutputStream fo = new FileOutputStream(out);
+							IOUtils.copy(cborDoc.getInputStream(), fo);
+						}						
+					} else {
+						success = parse(path, relativePath, resultFile);
+					}
+					
 					if (success) {
 						successPath.add(relativePath);
 					}
@@ -111,8 +141,9 @@ public abstract class AbstractParserRunner {
 			count[0]++;
 		});
 		
-		
-		fileMarker.closeWriter();
+		if (fileMarker != null) {
+			fileMarker.closeWriter();
+		}
 		
 		return successPath;
 	}
@@ -122,8 +153,8 @@ public abstract class AbstractParserRunner {
 	 * @param path
 	 * @return file object that represent the result file
 	 */
-	protected File getResultFile(Path path) {
-		return getResultFile(path, "");
+	protected File getResultFile(String relativePath) {
+		return getResultFile(relativePath, "");
 	}
 	
 	/**
@@ -131,18 +162,24 @@ public abstract class AbstractParserRunner {
 	 * @param path
 	 * @return file object that represent the result file
 	 */
-	protected File getResultFile(Path path, String suffix) {
-		return new File(resultFolder, getRelativePath(path) + suffix);
+	protected File getResultFile(String relativePath, String suffix) {
+		return new File(resultFolder, relativePath + suffix);
+	}	
+	
+	protected boolean parse(Path path, String relativePath, File resultFile) throws Exception {
+		return parse(path, relativePath, resultFile, null);
 	}
-
+	
 	/**
 	 * Abstract method, for parsing a document
 	 * @param path path to the documents
+	 * @param relativePath relative path to base folder
 	 * @param resultFile file object that represent the result file
+	 * @param cborDoc object representing CBOR document, null if the document is not in CBOR format
 	 * @return true if the file is parsed successfully 
 	 * @throws Exception
 	 */
-	protected abstract boolean parse(Path path, File resultFile) throws Exception;
+	protected abstract boolean parse(Path path, String relativePath, File resultFile, CborDocument cborDoc) throws Exception;
 		
 	/**
 	 * Get the file size limit in bytes (default: 2MB)
@@ -161,7 +198,7 @@ public abstract class AbstractParserRunner {
 	}
 	
 	/**
-	 * Get the base folder for documents to be parsed
+	 * Get the base folder of documents to be parsed
 	 * @return base folder
 	 */
 	public String getBaseFolder() {
@@ -169,7 +206,7 @@ public abstract class AbstractParserRunner {
 	}
 	
 	/**
-	 * Set the base folder for documents to be parsed
+	 * Set the base folder of documents to be parsed
 	 * @param baseFolder
 	 */
 	public void setBaseFolder(String baseFolder) {
@@ -228,6 +265,22 @@ public abstract class AbstractParserRunner {
 	}
 	
 	/**
+	 * Tell whether the documents are represented in CBOR format
+	 * @return
+	 */
+	public boolean isDocumentsInCborFormat() {
+		return cborFormat;
+	}
+
+	/**
+	 * Set whether the documents are represented in CBOR format
+	 * @param cborFormat
+	 */
+	public void setDocumentsInCborFormat(boolean cborFormat) {
+		this.cborFormat = cborFormat;
+	}
+
+	/**
 	 * Filtering rule for documents
 	 * @param path path to the documents
 	 * @return true if the document is allowed to be parsed
@@ -236,9 +289,9 @@ public abstract class AbstractParserRunner {
 		return true;
 	}
 	
-	protected InputStream getInputStream(Path path) throws FileNotFoundException {
-		return new FileInputStream(path.toFile());
-	}
+//	protected InputStream getInputStream(Path path) throws FileNotFoundException {
+//		return new FileInputStream(path.toFile());
+//	}
 
 	/**
 	 * Get relative path of a document from specified base folder

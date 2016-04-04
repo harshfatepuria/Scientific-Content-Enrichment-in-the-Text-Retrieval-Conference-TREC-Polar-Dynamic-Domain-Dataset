@@ -14,6 +14,7 @@ import org.apache.tika.sax.ToHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import cbor.CborDocument;
 import shared.AbstractParserRunner;
 
 /**
@@ -48,38 +49,36 @@ public class MeasurementParserRunner extends AbstractParserRunner {
 	}
 
 	@Override
-	protected File getResultFile(Path path) {
-		return super.getResultFile(path, ".measurement");
+	protected File getResultFile(String relativePath) {
+		return super.getResultFile(relativePath, ".measurement");
 	}
 	
 	@Override
-	protected boolean parse(Path path, File resultFile) throws Exception {
-		String relativePath = getRelativePath(path);
-		Metadata metadata = parsePath(path);
+	protected boolean parse(Path path, String relativePath, File resultFile, CborDocument cborDoc) throws Exception {
+		Metadata metadata = parsePath(path, cborDoc);
 		
-		if (metadata.get("measurement_extracted") == null) {
+		if (metadata.get("measurement_extractedText") == null) {
 			return false;
 		}
 		
 		metadata.add("filePath", relativePath);
 		
 		String json = getGson().toJson(metadata);
-		File jsonFile = getResultFile(path);
 		
-		jsonFile.getParentFile().mkdirs();
-		try(PrintWriter out = new PrintWriter(jsonFile)) {
+		resultFile.getParentFile().mkdirs();
+		try(PrintWriter out = new PrintWriter(resultFile)) {
 			out.print(json);
 		}
 		
 		return true;
 	}
 	
-	private Metadata parsePath(Path path) throws IOException, TikaException, SAXException {
+	private Metadata parsePath(Path path, CborDocument cborDoc) throws IOException, TikaException, SAXException {
 		ContentHandler handler = new ToHTMLContentHandler();
         Metadata metadata = new Metadata();
         ParseContext context = new ParseContext();
         
-        try(InputStream stream = new FileInputStream(path.toFile());){
+        try(InputStream stream = cborDoc == null ? new FileInputStream(path.toFile()) : cborDoc.getInputStream()){
         	measurementParser.parse(stream, handler, metadata, context);
         }
         
