@@ -27,7 +27,7 @@ for filepath in iglob(os.path.join(file, '*.json')):
             d['shortURL']=s
             mapping["metadata"]=d
             #Dumping JSON object with mapped shortened URLs and file path
-            keys=json.dumps(d, sort_keys=True)
+            keys=json.dumps(mapping, sort_keys=True)
             fp.write(keys)
             fp.close()
             print "\'"+ i+ "\'" + " : " +"\'"+ s+ "\'"
