@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "sweet_concept": [
+      "http://sweet.jpl.nasa.gov/2.3/reprSpaceCoordinate.owl#Longitude",
+      "http://sweet.jpl.nasa.gov/2.3/humanTransportation.owl#FAA"
+    ],
+    "sweet_entity": [
+      "Longitude",
+      "FAA"
+    ],
+    "filePath": [
+      "aero/weather/B9BED4CCE5F6CF7F5A63C00C3B5B126250430C47B85CAD29A166AF9310037BC2"
+    ]
+  }
+}

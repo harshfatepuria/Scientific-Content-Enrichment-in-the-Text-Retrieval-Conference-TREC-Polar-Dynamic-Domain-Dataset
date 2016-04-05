@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "filePath": [
+      "aero/weather/4233AEAC5E6728A80E3AFD719C9C0DE71C2CEE157C2ED23233E73298E471B6CC"
+    ],
+    "measurement_value": [
+      "24",
+      "1",
+      "1",
+      "24",
+      "1",
+      "1",
+      "15"
+    ],
+    "measurement_unit": [
+      "hour",
+      "day",
+      "week",
+      "hour",
+      "day",
+      "week",
+      "year"
+    ],
+    "measurement_extractedText": [
+      "24 hour",
+      "1 day",
+      "1 week",
+      "24 hour",
+      "1 day",
+      "1 week",
+      "15 year"
+    ]
+  }
+}

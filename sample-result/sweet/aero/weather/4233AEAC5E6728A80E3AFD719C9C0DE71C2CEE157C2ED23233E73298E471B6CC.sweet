@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "sweet_concept": [
+      "http://sweet.jpl.nasa.gov/2.3/matrElement.owl#Mo",
+      "http://sweet.jpl.nasa.gov/2.3/matrSediment.owl#Boulder",
+      "http://sweet.jpl.nasa.gov/2.3/humanTransportation.owl#FAA"
+    ],
+    "sweet_entity": [
+      "MO",
+      "Boulder",
+      "FAA"
+    ],
+    "filePath": [
+      "aero/weather/4233AEAC5E6728A80E3AFD719C9C0DE71C2CEE157C2ED23233E73298E471B6CC"
+    ]
+  }
+}

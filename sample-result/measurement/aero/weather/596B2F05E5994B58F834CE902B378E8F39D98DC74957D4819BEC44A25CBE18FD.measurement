@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "filePath": [
+      "aero/weather/596B2F05E5994B58F834CE902B378E8F39D98DC74957D4819BEC44A25CBE18FD"
+    ],
+    "measurement_value": [
+      "5",
+      "24",
+      "24"
+    ],
+    "measurement_unit": [
+      "minute",
+      "hour",
+      "hour"
+    ],
+    "measurement_extractedText": [
+      "5 minute",
+      "24 hour",
+      "24 hour"
+    ]
+  }
+}

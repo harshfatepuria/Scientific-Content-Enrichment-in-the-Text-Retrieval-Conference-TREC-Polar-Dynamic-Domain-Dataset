@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "filePath": [
+      "aero/weather/3327B0F8537ACCBE72C3C97663B5E903A29FC19D0098E6447FD8256AB665061D"
+    ],
+    "measurement_value": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "12",
+      "18",
+      "24",
+      "36"
+    ],
+    "measurement_unit": [
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour",
+      "hour"
+    ],
+    "measurement_extractedText": [
+      "1 hour",
+      "2 hour",
+      "3 hour",
+      "4 hour",
+      "5 hour",
+      "6 hour",
+      "12 hour",
+      "18 hour",
+      "24 hour",
+      "36 hour"
+    ]
+  }
+}
