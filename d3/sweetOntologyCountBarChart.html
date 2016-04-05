@@ -26,8 +26,8 @@
 </style>
 </head>
 <body>
-<h2>HORIZONTAL BAR CHART SHOWING NUMBER OF OCCURRENCES OF DIFFERENT SWEET CONCEPTS IN THE DATA</h2>
-<h3>SOLR QUERY: http://localhost:8983/solr/HW2/select?q=metadata.sweet_concept%3A*&rows=0&wt=json&indent=true&facet=true&facet.field=metadata.sweet_entity&facet.limit=100</h3>
+<h2>Horizontal Bar Chart showing Frequency of Occurrence of different SWEET Ontology concepts in the data</h2>
+<h3>SOLR QUERY: http://localhost:8983/solr/HW2/select?q=metadata.sweet_concept%3A*&rows=0&wt=json&indent=true&facet=true&facet.field=metadata.sweet_concept&facet.limit=100</h3>
 <script type="text/javascript" src="d3.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="jquery.js"></script>
 <script>
@@ -43,10 +43,14 @@ $.getJSON(fileName, function(json) {
       var prev="";
       var current=0;
      
-       $.each(json["facet_counts"]["facet_fields"]["metadata.sweet_entity"], function(i,field){
+       $.each(json["facet_counts"]["facet_fields"]["metadata.sweet_concept"], function(i,field){
         
         if(i%2==0)
-          prev=String(field);
+        {
+          var tempPrev=String(field);
+          var hashIndex=tempPrev.lastIndexOf('#');
+          prev=tempPrev.substr(hashIndex+1);
+        }
         else
         {
           current=parseInt(field);
