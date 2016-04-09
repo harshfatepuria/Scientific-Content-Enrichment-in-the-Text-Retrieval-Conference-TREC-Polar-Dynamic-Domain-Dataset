@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="example-data-driven-schema" version="1.6">
+  <uniqueKey>id</uniqueKey>
+  <fieldType name="ancestor_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="binary" class="solr.BinaryField"/>
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+  <fieldType name="currency" class="solr.CurrencyField" currencyConfig="currency.xml" defaultCurrency="USD" precisionStep="8"/>
+  <fieldType name="date" class="solr.TrieDateField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="dates" class="solr.TrieDateField" positionIncrementGap="0" multiValued="true" precisionStep="0"/>
+  <fieldType name="descendent_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="double" class="solr.TrieDoubleField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="doubles" class="solr.TrieDoubleField" positionIncrementGap="0" multiValued="true" precisionStep="0"/>
+  <fieldType name="float" class="solr.TrieFloatField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="floats" class="solr.TrieFloatField" positionIncrementGap="0" multiValued="true" precisionStep="0"/>
+  <fieldType name="ignored" class="solr.StrField" indexed="false" stored="false" multiValued="true"/>
+  <fieldType name="int" class="solr.TrieIntField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="ints" class="solr.TrieIntField" positionIncrementGap="0" multiValued="true" precisionStep="0"/>
+  <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" maxDistErr="0.001" distErrPct="0.025" distanceUnits="kilometers"/>
+  <fieldType name="long" class="solr.TrieLongField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="longs" class="solr.TrieLongField" positionIncrementGap="0" multiValued="true" precisionStep="0"/>
+  <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="phonetic_en" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="point" class="solr.PointType" subFieldSuffix="_d" dimension="2"/>
+  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true"/>
+  <fieldType name="tdate" class="solr.TrieDateField" positionIncrementGap="0" precisionStep="6"/>
+  <fieldType name="tdates" class="solr.TrieDateField" positionIncrementGap="0" multiValued="true" precisionStep="6"/>
+  <fieldType name="tdouble" class="solr.TrieDoubleField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tdoubles" class="solr.TrieDoubleField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+  <fieldType name="text_ar" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ar.txt" ignoreCase="true"/>
+      <filter class="solr.ArabicNormalizationFilterFactory"/>
+      <filter class="solr.ArabicStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_bg" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_bg.txt" ignoreCase="true"/>
+      <filter class="solr.BulgarianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ca" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ca.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ca.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Catalan"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_cjk" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.CJKWidthFilterFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.CJKBigramFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_cz" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_cz.txt" ignoreCase="true"/>
+      <filter class="solr.CzechStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_da.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_de.txt" ignoreCase="true"/>
+      <filter class="solr.GermanNormalizationFilterFactory"/>
+      <filter class="solr.GermanLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_el" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.GreekLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_el.txt" ignoreCase="false"/>
+      <filter class="solr.GreekStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="1" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="0"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting_tight" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="1" generateNumberParts="0" generateWordParts="0" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_es" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_es.txt" ignoreCase="true"/>
+      <filter class="solr.SpanishLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_eu" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_eu.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Basque"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fa" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <charFilter class="solr.PersianCharFilterFactory"/>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ArabicNormalizationFilterFactory"/>
+      <filter class="solr.PersianNormalizationFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_fa.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fi" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_fi.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Finnish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fr" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_fr.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_fr.txt" ignoreCase="true"/>
+      <filter class="solr.FrenchLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ga" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ga.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/hyphenations_ga.txt" ignoreCase="true"/>
+      <filter class="solr.IrishLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ga.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Irish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ReversedWildcardFilterFactory" maxPosQuestion="2" maxFractionAsterisk="0.33" maxPosAsterisk="3" withOriginal="true"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_gl" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_gl.txt" ignoreCase="true"/>
+      <filter class="solr.GalicianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hi" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.IndicNormalizationFilterFactory"/>
+      <filter class="solr.HindiNormalizationFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_hi.txt" ignoreCase="true"/>
+      <filter class="solr.HindiStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hu" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_hu.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Hungarian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hy" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_hy.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Armenian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_id" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_id.txt" ignoreCase="true"/>
+      <filter class="solr.IndonesianStemFilterFactory" stemDerivational="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_it" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_it.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_it.txt" ignoreCase="true"/>
+      <filter class="solr.ItalianLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ja" class="solr.TextField" autoGeneratePhraseQueries="false" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search"/>
+      <filter class="solr.JapaneseBaseFormFilterFactory"/>
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/stoptags_ja.txt"/>
+      <filter class="solr.CJKWidthFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ja.txt" ignoreCase="true"/>
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_lv" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_lv.txt" ignoreCase="true"/>
+      <filter class="solr.LatvianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_nl" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
+      <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_no" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_no.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Norwegian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_pt" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_pt.txt" ignoreCase="true"/>
+      <filter class="solr.PortugueseLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ro" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ro.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Romanian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ru" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_ru.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Russian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_sv" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_sv.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Swedish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_th" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.ThaiTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_th.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_tr" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.TurkishLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_tr.txt" ignoreCase="false"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Turkish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="tfloat" class="solr.TrieFloatField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tfloats" class="solr.TrieFloatField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+  <fieldType name="tint" class="solr.TrieIntField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tints" class="solr.TrieIntField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+  <fieldType name="tlong" class="solr.TrieLongField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tlongs" class="solr.TrieLongField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+  <field name="_root_" type="string" indexed="true" stored="false"/>
+  <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="_version_" type="long" indexed="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="metadata.Geographic_LATITUDE" type="tdoubles"/>
+  <field name="metadata.Geographic_LONGITUDE" type="tdoubles"/>
+  <field name="metadata.Geographic_NAME" type="strings"/>
+  <field name="metadata.Optional_LATITUDE1" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE10" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE100" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE101" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE102" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE103" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE104" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE105" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE106" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE107" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE108" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE109" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE11" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE110" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE111" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE112" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE113" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE114" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE115" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE116" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE117" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE118" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE119" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE12" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE120" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE121" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE122" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE123" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE124" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE125" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE126" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE127" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE128" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE129" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE13" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE130" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE131" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE132" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE133" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE134" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE135" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE136" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE137" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE138" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE139" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE14" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE140" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE141" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE142" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE143" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE144" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE145" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE146" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE147" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE148" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE149" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE15" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE150" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE151" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE152" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE153" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE154" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE155" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE16" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE17" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE18" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE19" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE2" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE20" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE21" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE22" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE23" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE24" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE25" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE26" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE27" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE28" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE29" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE3" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE30" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE31" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE32" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE33" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE34" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE35" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE36" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE37" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE38" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE39" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE4" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE40" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE41" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE42" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE43" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE44" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE45" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE46" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE47" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE48" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE49" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE5" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE50" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE51" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE52" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE53" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE54" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE55" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE56" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE57" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE58" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE59" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE6" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE60" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE61" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE62" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE63" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE64" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE65" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE66" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE67" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE68" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE69" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE7" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE70" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE71" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE72" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE73" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE74" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE75" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE76" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE77" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE78" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE79" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE8" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE80" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE81" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE82" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE83" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE84" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE85" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE86" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE87" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE88" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE89" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE9" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE90" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE91" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE92" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE93" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE94" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE95" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE96" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE97" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE98" type="tdoubles"/>
+  <field name="metadata.Optional_LATITUDE99" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE1" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE10" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE100" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE101" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE102" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE103" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE104" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE105" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE106" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE107" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE108" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE109" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE11" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE110" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE111" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE112" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE113" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE114" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE115" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE116" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE117" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE118" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE119" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE12" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE120" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE121" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE122" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE123" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE124" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE125" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE126" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE127" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE128" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE129" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE13" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE130" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE131" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE132" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE133" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE134" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE135" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE136" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE137" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE138" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE139" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE14" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE140" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE141" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE142" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE143" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE144" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE145" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE146" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE147" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE148" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE149" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE15" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE150" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE151" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE152" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE153" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE154" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE155" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE16" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE17" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE18" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE19" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE2" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE20" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE21" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE22" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE23" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE24" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE25" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE26" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE27" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE28" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE29" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE3" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE30" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE31" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE32" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE33" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE34" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE35" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE36" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE37" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE38" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE39" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE4" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE40" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE41" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE42" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE43" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE44" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE45" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE46" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE47" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE48" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE49" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE5" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE50" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE51" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE52" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE53" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE54" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE55" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE56" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE57" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE58" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE59" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE6" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE60" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE61" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE62" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE63" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE64" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE65" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE66" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE67" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE68" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE69" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE7" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE70" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE71" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE72" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE73" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE74" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE75" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE76" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE77" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE78" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE79" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE8" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE80" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE81" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE82" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE83" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE84" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE85" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE86" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE87" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE88" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE89" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE9" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE90" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE91" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE92" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE93" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE94" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE95" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE96" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE97" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE98" type="tdoubles"/>
+  <field name="metadata.Optional_LONGITUDE99" type="tdoubles"/>
+  <field name="metadata.Optional_NAME1" type="strings"/>
+  <field name="metadata.Optional_NAME10" type="strings"/>
+  <field name="metadata.Optional_NAME100" type="strings"/>
+  <field name="metadata.Optional_NAME101" type="strings"/>
+  <field name="metadata.Optional_NAME102" type="strings"/>
+  <field name="metadata.Optional_NAME103" type="strings"/>
+  <field name="metadata.Optional_NAME104" type="strings"/>
+  <field name="metadata.Optional_NAME105" type="strings"/>
+  <field name="metadata.Optional_NAME106" type="strings"/>
+  <field name="metadata.Optional_NAME107" type="strings"/>
+  <field name="metadata.Optional_NAME108" type="strings"/>
+  <field name="metadata.Optional_NAME109" type="strings"/>
+  <field name="metadata.Optional_NAME11" type="strings"/>
+  <field name="metadata.Optional_NAME110" type="strings"/>
+  <field name="metadata.Optional_NAME111" type="strings"/>
+  <field name="metadata.Optional_NAME112" type="strings"/>
+  <field name="metadata.Optional_NAME113" type="strings"/>
+  <field name="metadata.Optional_NAME114" type="strings"/>
+  <field name="metadata.Optional_NAME115" type="strings"/>
+  <field name="metadata.Optional_NAME116" type="strings"/>
+  <field name="metadata.Optional_NAME117" type="strings"/>
+  <field name="metadata.Optional_NAME118" type="strings"/>
+  <field name="metadata.Optional_NAME119" type="strings"/>
+  <field name="metadata.Optional_NAME12" type="strings"/>
+  <field name="metadata.Optional_NAME120" type="strings"/>
+  <field name="metadata.Optional_NAME121" type="strings"/>
+  <field name="metadata.Optional_NAME122" type="strings"/>
+  <field name="metadata.Optional_NAME123" type="strings"/>
+  <field name="metadata.Optional_NAME124" type="strings"/>
+  <field name="metadata.Optional_NAME125" type="strings"/>
+  <field name="metadata.Optional_NAME126" type="strings"/>
+  <field name="metadata.Optional_NAME127" type="strings"/>
+  <field name="metadata.Optional_NAME128" type="strings"/>
+  <field name="metadata.Optional_NAME129" type="strings"/>
+  <field name="metadata.Optional_NAME13" type="strings"/>
+  <field name="metadata.Optional_NAME130" type="strings"/>
+  <field name="metadata.Optional_NAME131" type="strings"/>
+  <field name="metadata.Optional_NAME132" type="strings"/>
+  <field name="metadata.Optional_NAME133" type="strings"/>
+  <field name="metadata.Optional_NAME134" type="strings"/>
+  <field name="metadata.Optional_NAME135" type="strings"/>
+  <field name="metadata.Optional_NAME136" type="strings"/>
+  <field name="metadata.Optional_NAME137" type="strings"/>
+  <field name="metadata.Optional_NAME138" type="strings"/>
+  <field name="metadata.Optional_NAME139" type="strings"/>
+  <field name="metadata.Optional_NAME14" type="strings"/>
+  <field name="metadata.Optional_NAME140" type="strings"/>
+  <field name="metadata.Optional_NAME141" type="strings"/>
+  <field name="metadata.Optional_NAME142" type="strings"/>
+  <field name="metadata.Optional_NAME143" type="strings"/>
+  <field name="metadata.Optional_NAME144" type="strings"/>
+  <field name="metadata.Optional_NAME145" type="strings"/>
+  <field name="metadata.Optional_NAME146" type="strings"/>
+  <field name="metadata.Optional_NAME147" type="strings"/>
+  <field name="metadata.Optional_NAME148" type="strings"/>
+  <field name="metadata.Optional_NAME149" type="strings"/>
+  <field name="metadata.Optional_NAME15" type="strings"/>
+  <field name="metadata.Optional_NAME150" type="strings"/>
+  <field name="metadata.Optional_NAME151" type="strings"/>
+  <field name="metadata.Optional_NAME152" type="strings"/>
+  <field name="metadata.Optional_NAME153" type="strings"/>
+  <field name="metadata.Optional_NAME154" type="strings"/>
+  <field name="metadata.Optional_NAME155" type="strings"/>
+  <field name="metadata.Optional_NAME16" type="strings"/>
+  <field name="metadata.Optional_NAME17" type="strings"/>
+  <field name="metadata.Optional_NAME18" type="strings"/>
+  <field name="metadata.Optional_NAME19" type="strings"/>
+  <field name="metadata.Optional_NAME2" type="strings"/>
+  <field name="metadata.Optional_NAME20" type="strings"/>
+  <field name="metadata.Optional_NAME21" type="strings"/>
+  <field name="metadata.Optional_NAME22" type="strings"/>
+  <field name="metadata.Optional_NAME23" type="strings"/>
+  <field name="metadata.Optional_NAME24" type="strings"/>
+  <field name="metadata.Optional_NAME25" type="strings"/>
+  <field name="metadata.Optional_NAME26" type="strings"/>
+  <field name="metadata.Optional_NAME27" type="strings"/>
+  <field name="metadata.Optional_NAME28" type="strings"/>
+  <field name="metadata.Optional_NAME29" type="strings"/>
+  <field name="metadata.Optional_NAME3" type="strings"/>
+  <field name="metadata.Optional_NAME30" type="strings"/>
+  <field name="metadata.Optional_NAME31" type="strings"/>
+  <field name="metadata.Optional_NAME32" type="strings"/>
+  <field name="metadata.Optional_NAME33" type="strings"/>
+  <field name="metadata.Optional_NAME34" type="strings"/>
+  <field name="metadata.Optional_NAME35" type="strings"/>
+  <field name="metadata.Optional_NAME36" type="strings"/>
+  <field name="metadata.Optional_NAME37" type="strings"/>
+  <field name="metadata.Optional_NAME38" type="strings"/>
+  <field name="metadata.Optional_NAME39" type="strings"/>
+  <field name="metadata.Optional_NAME4" type="strings"/>
+  <field name="metadata.Optional_NAME40" type="strings"/>
+  <field name="metadata.Optional_NAME41" type="strings"/>
+  <field name="metadata.Optional_NAME42" type="strings"/>
+  <field name="metadata.Optional_NAME43" type="strings"/>
+  <field name="metadata.Optional_NAME44" type="strings"/>
+  <field name="metadata.Optional_NAME45" type="strings"/>
+  <field name="metadata.Optional_NAME46" type="strings"/>
+  <field name="metadata.Optional_NAME47" type="strings"/>
+  <field name="metadata.Optional_NAME48" type="strings"/>
+  <field name="metadata.Optional_NAME49" type="strings"/>
+  <field name="metadata.Optional_NAME5" type="strings"/>
+  <field name="metadata.Optional_NAME50" type="strings"/>
+  <field name="metadata.Optional_NAME51" type="strings"/>
+  <field name="metadata.Optional_NAME52" type="strings"/>
+  <field name="metadata.Optional_NAME53" type="strings"/>
+  <field name="metadata.Optional_NAME54" type="strings"/>
+  <field name="metadata.Optional_NAME55" type="strings"/>
+  <field name="metadata.Optional_NAME56" type="strings"/>
+  <field name="metadata.Optional_NAME57" type="strings"/>
+  <field name="metadata.Optional_NAME58" type="strings"/>
+  <field name="metadata.Optional_NAME59" type="strings"/>
+  <field name="metadata.Optional_NAME6" type="strings"/>
+  <field name="metadata.Optional_NAME60" type="strings"/>
+  <field name="metadata.Optional_NAME61" type="strings"/>
+  <field name="metadata.Optional_NAME62" type="strings"/>
+  <field name="metadata.Optional_NAME63" type="strings"/>
+  <field name="metadata.Optional_NAME64" type="strings"/>
+  <field name="metadata.Optional_NAME65" type="strings"/>
+  <field name="metadata.Optional_NAME66" type="strings"/>
+  <field name="metadata.Optional_NAME67" type="strings"/>
+  <field name="metadata.Optional_NAME68" type="strings"/>
+  <field name="metadata.Optional_NAME69" type="strings"/>
+  <field name="metadata.Optional_NAME7" type="strings"/>
+  <field name="metadata.Optional_NAME70" type="strings"/>
+  <field name="metadata.Optional_NAME71" type="strings"/>
+  <field name="metadata.Optional_NAME72" type="strings"/>
+  <field name="metadata.Optional_NAME73" type="strings"/>
+  <field name="metadata.Optional_NAME74" type="strings"/>
+  <field name="metadata.Optional_NAME75" type="strings"/>
+  <field name="metadata.Optional_NAME76" type="strings"/>
+  <field name="metadata.Optional_NAME77" type="strings"/>
+  <field name="metadata.Optional_NAME78" type="strings"/>
+  <field name="metadata.Optional_NAME79" type="strings"/>
+  <field name="metadata.Optional_NAME8" type="strings"/>
+  <field name="metadata.Optional_NAME80" type="strings"/>
+  <field name="metadata.Optional_NAME81" type="strings"/>
+  <field name="metadata.Optional_NAME82" type="strings"/>
+  <field name="metadata.Optional_NAME83" type="strings"/>
+  <field name="metadata.Optional_NAME84" type="strings"/>
+  <field name="metadata.Optional_NAME85" type="strings"/>
+  <field name="metadata.Optional_NAME86" type="strings"/>
+  <field name="metadata.Optional_NAME87" type="strings"/>
+  <field name="metadata.Optional_NAME88" type="strings"/>
+  <field name="metadata.Optional_NAME89" type="strings"/>
+  <field name="metadata.Optional_NAME9" type="strings"/>
+  <field name="metadata.Optional_NAME90" type="strings"/>
+  <field name="metadata.Optional_NAME91" type="strings"/>
+  <field name="metadata.Optional_NAME92" type="strings"/>
+  <field name="metadata.Optional_NAME93" type="strings"/>
+  <field name="metadata.Optional_NAME94" type="strings"/>
+  <field name="metadata.Optional_NAME95" type="strings"/>
+  <field name="metadata.Optional_NAME96" type="strings"/>
+  <field name="metadata.Optional_NAME97" type="strings"/>
+  <field name="metadata.Optional_NAME98" type="strings"/>
+  <field name="metadata.Optional_NAME99" type="strings"/>
+  <field name="metadata.RelatedPublications.0.author" type="strings"/>
+  <field name="metadata.RelatedPublications.0.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.0.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.0.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.0.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.0.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.0.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.0.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.0.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.0.number" type="strings"/>
+  <field name="metadata.RelatedPublications.0.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.0.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.0.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.0.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.0.title" type="strings"/>
+  <field name="metadata.RelatedPublications.0.url" type="strings"/>
+  <field name="metadata.RelatedPublications.0.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.0.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.0.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.0.year" type="strings"/>
+  <field name="metadata.RelatedPublications.1.author" type="strings"/>
+  <field name="metadata.RelatedPublications.1.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.1.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.1.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.1.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.1.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.1.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.1.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.1.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.1.number" type="strings"/>
+  <field name="metadata.RelatedPublications.1.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.1.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.1.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.1.title" type="strings"/>
+  <field name="metadata.RelatedPublications.1.url" type="strings"/>
+  <field name="metadata.RelatedPublications.1.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.1.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.1.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.1.year" type="strings"/>
+  <field name="metadata.RelatedPublications.10.author" type="strings"/>
+  <field name="metadata.RelatedPublications.10.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.10.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.10.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.10.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.10.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.10.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.10.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.10.number" type="strings"/>
+  <field name="metadata.RelatedPublications.10.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.10.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.10.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.10.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.10.title" type="strings"/>
+  <field name="metadata.RelatedPublications.10.url" type="strings"/>
+  <field name="metadata.RelatedPublications.10.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.10.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.10.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.10.year" type="strings"/>
+  <field name="metadata.RelatedPublications.11.author" type="strings"/>
+  <field name="metadata.RelatedPublications.11.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.11.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.11.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.11.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.11.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.11.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.11.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.11.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.11.month" type="strings"/>
+  <field name="metadata.RelatedPublications.11.note" type="strings"/>
+  <field name="metadata.RelatedPublications.11.number" type="strings"/>
+  <field name="metadata.RelatedPublications.11.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.11.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.11.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.11.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.11.title" type="strings"/>
+  <field name="metadata.RelatedPublications.11.url" type="strings"/>
+  <field name="metadata.RelatedPublications.11.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.11.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.11.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.11.year" type="strings"/>
+  <field name="metadata.RelatedPublications.12.author" type="strings"/>
+  <field name="metadata.RelatedPublications.12.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.12.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.12.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.12.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.12.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.12.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.12.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.12.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.12.number" type="strings"/>
+  <field name="metadata.RelatedPublications.12.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.12.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.12.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.12.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.12.title" type="strings"/>
+  <field name="metadata.RelatedPublications.12.url" type="strings"/>
+  <field name="metadata.RelatedPublications.12.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.12.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.12.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.12.year" type="strings"/>
+  <field name="metadata.RelatedPublications.13.author" type="strings"/>
+  <field name="metadata.RelatedPublications.13.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.13.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.13.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.13.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.13.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.13.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.13.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.13.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.13.number" type="strings"/>
+  <field name="metadata.RelatedPublications.13.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.13.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.13.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.13.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.13.title" type="strings"/>
+  <field name="metadata.RelatedPublications.13.url" type="strings"/>
+  <field name="metadata.RelatedPublications.13.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.13.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.13.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.13.year" type="strings"/>
+  <field name="metadata.RelatedPublications.14.author" type="strings"/>
+  <field name="metadata.RelatedPublications.14.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.14.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.14.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.14.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.14.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.14.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.14.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.14.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.14.number" type="strings"/>
+  <field name="metadata.RelatedPublications.14.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.14.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.14.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.14.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.14.title" type="strings"/>
+  <field name="metadata.RelatedPublications.14.url" type="strings"/>
+  <field name="metadata.RelatedPublications.14.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.14.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.14.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.14.year" type="strings"/>
+  <field name="metadata.RelatedPublications.15.author" type="strings"/>
+  <field name="metadata.RelatedPublications.15.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.15.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.15.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.15.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.15.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.15.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.15.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.15.month" type="strings"/>
+  <field name="metadata.RelatedPublications.15.note" type="strings"/>
+  <field name="metadata.RelatedPublications.15.number" type="strings"/>
+  <field name="metadata.RelatedPublications.15.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.15.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.15.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.15.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.15.title" type="strings"/>
+  <field name="metadata.RelatedPublications.15.url" type="strings"/>
+  <field name="metadata.RelatedPublications.15.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.15.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.15.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.15.year" type="strings"/>
+  <field name="metadata.RelatedPublications.16.author" type="strings"/>
+  <field name="metadata.RelatedPublications.16.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.16.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.16.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.16.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.16.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.16.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.16.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.16.number" type="strings"/>
+  <field name="metadata.RelatedPublications.16.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.16.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.16.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.16.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.16.title" type="strings"/>
+  <field name="metadata.RelatedPublications.16.url" type="strings"/>
+  <field name="metadata.RelatedPublications.16.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.16.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.16.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.16.year" type="strings"/>
+  <field name="metadata.RelatedPublications.17.author" type="strings"/>
+  <field name="metadata.RelatedPublications.17.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.17.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.17.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.17.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.17.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.17.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.17.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.17.number" type="strings"/>
+  <field name="metadata.RelatedPublications.17.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.17.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.17.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.17.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.17.title" type="strings"/>
+  <field name="metadata.RelatedPublications.17.url" type="strings"/>
+  <field name="metadata.RelatedPublications.17.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.17.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.17.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.17.year" type="strings"/>
+  <field name="metadata.RelatedPublications.18.author" type="strings"/>
+  <field name="metadata.RelatedPublications.18.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.18.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.18.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.18.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.18.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.18.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.18.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.18.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.18.number" type="strings"/>
+  <field name="metadata.RelatedPublications.18.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.18.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.18.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.18.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.18.title" type="strings"/>
+  <field name="metadata.RelatedPublications.18.url" type="strings"/>
+  <field name="metadata.RelatedPublications.18.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.18.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.18.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.18.year" type="strings"/>
+  <field name="metadata.RelatedPublications.19.author" type="strings"/>
+  <field name="metadata.RelatedPublications.19.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.19.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.19.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.19.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.19.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.19.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.19.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.19.number" type="strings"/>
+  <field name="metadata.RelatedPublications.19.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.19.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.19.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.19.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.19.title" type="strings"/>
+  <field name="metadata.RelatedPublications.19.url" type="strings"/>
+  <field name="metadata.RelatedPublications.19.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.19.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.19.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.19.year" type="strings"/>
+  <field name="metadata.RelatedPublications.2.author" type="strings"/>
+  <field name="metadata.RelatedPublications.2.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.2.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.2.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.2.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.2.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.2.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.2.month" type="strings"/>
+  <field name="metadata.RelatedPublications.2.note" type="strings"/>
+  <field name="metadata.RelatedPublications.2.number" type="strings"/>
+  <field name="metadata.RelatedPublications.2.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.2.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.2.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.2.title" type="strings"/>
+  <field name="metadata.RelatedPublications.2.url" type="strings"/>
+  <field name="metadata.RelatedPublications.2.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.2.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.2.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.2.year" type="strings"/>
+  <field name="metadata.RelatedPublications.3.author" type="strings"/>
+  <field name="metadata.RelatedPublications.3.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.3.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.3.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.3.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.3.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.3.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.3.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.3.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.3.number" type="strings"/>
+  <field name="metadata.RelatedPublications.3.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.3.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.3.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.3.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.3.title" type="strings"/>
+  <field name="metadata.RelatedPublications.3.url" type="strings"/>
+  <field name="metadata.RelatedPublications.3.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.3.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.3.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.3.year" type="strings"/>
+  <field name="metadata.RelatedPublications.4.author" type="strings"/>
+  <field name="metadata.RelatedPublications.4.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.4.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.4.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.4.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.4.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.4.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.4.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.4.month" type="strings"/>
+  <field name="metadata.RelatedPublications.4.note" type="strings"/>
+  <field name="metadata.RelatedPublications.4.number" type="strings"/>
+  <field name="metadata.RelatedPublications.4.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.4.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.4.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.4.title" type="strings"/>
+  <field name="metadata.RelatedPublications.4.url" type="strings"/>
+  <field name="metadata.RelatedPublications.4.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.4.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.4.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.4.year" type="strings"/>
+  <field name="metadata.RelatedPublications.5.author" type="strings"/>
+  <field name="metadata.RelatedPublications.5.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.5.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.5.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.5.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.5.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.5.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.5.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.5.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.5.number" type="strings"/>
+  <field name="metadata.RelatedPublications.5.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.5.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.5.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.5.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.5.title" type="strings"/>
+  <field name="metadata.RelatedPublications.5.url" type="strings"/>
+  <field name="metadata.RelatedPublications.5.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.5.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.5.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.5.year" type="strings"/>
+  <field name="metadata.RelatedPublications.6.author" type="strings"/>
+  <field name="metadata.RelatedPublications.6.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.6.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.6.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.6.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.6.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.6.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.6.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.6.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.6.number" type="strings"/>
+  <field name="metadata.RelatedPublications.6.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.6.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.6.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.6.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.6.title" type="strings"/>
+  <field name="metadata.RelatedPublications.6.url" type="strings"/>
+  <field name="metadata.RelatedPublications.6.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.6.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.6.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.6.year" type="strings"/>
+  <field name="metadata.RelatedPublications.7.author" type="strings"/>
+  <field name="metadata.RelatedPublications.7.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.7.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.7.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.7.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.7.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.7.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.7.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.7.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.7.number" type="strings"/>
+  <field name="metadata.RelatedPublications.7.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.7.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.7.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.7.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.7.title" type="strings"/>
+  <field name="metadata.RelatedPublications.7.url" type="strings"/>
+  <field name="metadata.RelatedPublications.7.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.7.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.7.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.7.year" type="strings"/>
+  <field name="metadata.RelatedPublications.8.author" type="strings"/>
+  <field name="metadata.RelatedPublications.8.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.8.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.8.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.8.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.8.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.8.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.8.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.8.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.8.month" type="strings"/>
+  <field name="metadata.RelatedPublications.8.note" type="strings"/>
+  <field name="metadata.RelatedPublications.8.number" type="strings"/>
+  <field name="metadata.RelatedPublications.8.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.8.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.8.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.8.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.8.title" type="strings"/>
+  <field name="metadata.RelatedPublications.8.url" type="strings"/>
+  <field name="metadata.RelatedPublications.8.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.8.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.8.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.8.year" type="strings"/>
+  <field name="metadata.RelatedPublications.9.author" type="strings"/>
+  <field name="metadata.RelatedPublications.9.booktitle" type="strings"/>
+  <field name="metadata.RelatedPublications.9.citation_link" type="strings"/>
+  <field name="metadata.RelatedPublications.9.citations" type="strings"/>
+  <field name="metadata.RelatedPublications.9.citations_list" type="strings"/>
+  <field name="metadata.RelatedPublications.9.cluster_id" type="strings"/>
+  <field name="metadata.RelatedPublications.9.excerpt" type="strings"/>
+  <field name="metadata.RelatedPublications.9.institution" type="strings"/>
+  <field name="metadata.RelatedPublications.9.journal" type="strings"/>
+  <field name="metadata.RelatedPublications.9.number" type="strings"/>
+  <field name="metadata.RelatedPublications.9.organization" type="strings"/>
+  <field name="metadata.RelatedPublications.9.pages" type="strings"/>
+  <field name="metadata.RelatedPublications.9.pdf_link" type="strings"/>
+  <field name="metadata.RelatedPublications.9.publisher" type="strings"/>
+  <field name="metadata.RelatedPublications.9.title" type="strings"/>
+  <field name="metadata.RelatedPublications.9.url" type="strings"/>
+  <field name="metadata.RelatedPublications.9.versions" type="strings"/>
+  <field name="metadata.RelatedPublications.9.versions_list" type="strings"/>
+  <field name="metadata.RelatedPublications.9.volume" type="strings"/>
+  <field name="metadata.RelatedPublications.9.year" type="strings"/>
+  <field name="metadata.TEI.teiHeader.encodingDesc.appInfo.application.ident" type="strings"/>
+  <field name="metadata.TEI.teiHeader.encodingDesc.appInfo.application.ref.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.encodingDesc.appInfo.application.ref.target" type="strings"/>
+  <field name="metadata.TEI.teiHeader.encodingDesc.appInfo.application.version" type="strings"/>
+  <field name="metadata.TEI.teiHeader.encodingDesc.appInfo.application.when" type="tdates"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.availability.p" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.availability.status" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.date" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.date.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.date.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.date.when" type="tdates"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.publicationStmt.publisher" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.addrLine" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.country" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.country.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.country.key" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.postBox" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.postCode" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.region" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.address.settlement" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.orgName" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.orgName.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.orgName.key" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.affiliation.orgName.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.email" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.persName.forename.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.persName.forename.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.persName.roleName" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.persName.surname" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.author.role" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.title.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.title.level" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.title.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.analytic.title.xml_lang" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.idno.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.idno.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.biblScope.content" type="tlongs"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.biblScope.from" type="tlongs"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.biblScope.to" type="tlongs"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.biblScope.unit" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.date.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.date.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.date.when" type="tdates"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.imprint.publisher" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.meeting.address.addrLine" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.title.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.title.level" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.monogr.title.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.note" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.note.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.sourceDesc.biblStruct.note.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.titleStmt.title.content" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.titleStmt.title.level" type="strings"/>
+  <field name="metadata.TEI.teiHeader.fileDesc.titleStmt.title.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.profileDesc.abstract.p" type="strings"/>
+  <field name="metadata.TEI.teiHeader.profileDesc.abstract.xml_lang" type="strings"/>
+  <field name="metadata.TEI.teiHeader.profileDesc.textClass.keywords" type="strings"/>
+  <field name="metadata.TEI.teiHeader.profileDesc.textClass.keywords.term" type="strings"/>
+  <field name="metadata.TEI.teiHeader.revisionDesc.date.type" type="strings"/>
+  <field name="metadata.TEI.teiHeader.revisionDesc.date.when" type="tlongs"/>
+  <field name="metadata.TEI.teiHeader.xml_lang" type="strings"/>
+  <field name="metadata.TEI.text.xml_lang" type="strings"/>
+  <field name="metadata.TEI.xmlns" type="strings"/>
+  <field name="metadata.TEI.xmlns_xlink" type="strings"/>
+  <field name="metadata.TEI.xmlns_xsi" type="strings"/>
+  <field name="metadata.TEI.xsi_schemaLocation" type="strings"/>
+  <field name="metadata.extractedTitle" type="strings"/>
+  <field name="metadata.filePath" type="strings"/>
+  <field name="metadata.measurement_extractedText" type="strings"/>
+  <field name="metadata.measurement_unit" type="strings"/>
+  <field name="metadata.measurement_value" type="tdoubles"/>
+  <field name="metadata.shortURL" type="strings"/>
+  <field name="metadata.sweet_concept" type="strings"/>
+  <field name="metadata.sweet_entity" type="strings"/>
+  <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>
+  <dynamicField name="*_descendent_path" type="descendent_path" indexed="true" stored="true"/>
+  <dynamicField name="*_ancestor_path" type="ancestor_path" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_en_split" type="text_en_splitting" indexed="true" stored="true"/>
+  <dynamicField name="*_coordinate" type="tdouble" indexed="true" stored="false"/>
+  <dynamicField name="ignored_*" type="ignored" multiValued="true"/>
+  <dynamicField name="*_txt_rev" type="text_general_rev" indexed="true" stored="true"/>
+  <dynamicField name="*_phon_en" type="phonetic_en" indexed="true" stored="true"/>
+  <dynamicField name="*_s_lower" type="lowercase" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_cjk" type="text_cjk" indexed="true" stored="true"/>
+  <dynamicField name="random_*" type="random"/>
+  <dynamicField name="*_txt_en" type="text_en" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ar" type="text_ar" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_bg" type="text_bg" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ca" type="text_ca" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_cz" type="text_cz" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_da" type="text_da" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_de" type="text_de" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_el" type="text_el" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_es" type="text_es" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_eu" type="text_eu" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fa" type="text_fa" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fi" type="text_fi" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fr" type="text_fr" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ga" type="text_ga" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_gl" type="text_gl" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hi" type="text_hi" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hu" type="text_hu" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hy" type="text_hy" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_id" type="text_id" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_it" type="text_it" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ja" type="text_ja" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_lv" type="text_lv" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_nl" type="text_nl" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_no" type="text_no" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_pt" type="text_pt" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ro" type="text_ro" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ru" type="text_ru" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_sv" type="text_sv" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_th" type="text_th" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_tr" type="text_tr" indexed="true" stored="true"/>
+  <dynamicField name="*_point" type="point" indexed="true" stored="true"/>
+  <dynamicField name="*_srpt" type="location_rpt" indexed="true" stored="true"/>
+  <dynamicField name="*_tdts" type="tdates" indexed="true" stored="true"/>
+  <dynamicField name="attr_*" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
+  <dynamicField name="*_dts" type="date" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_tis" type="tints" indexed="true" stored="true"/>
+  <dynamicField name="*_tls" type="tlongs" indexed="true" stored="true"/>
+  <dynamicField name="*_tfs" type="tfloats" indexed="true" stored="true"/>
+  <dynamicField name="*_tds" type="tdoubles" indexed="true" stored="true"/>
+  <dynamicField name="*_tdt" type="tdate" indexed="true" stored="true"/>
+  <dynamicField name="*_is" type="ints" indexed="true" stored="true"/>
+  <dynamicField name="*_ss" type="strings" indexed="true" stored="true"/>
+  <dynamicField name="*_ls" type="longs" indexed="true" stored="true"/>
+  <dynamicField name="*_bs" type="booleans" indexed="true" stored="true"/>
+  <dynamicField name="*_fs" type="floats" indexed="true" stored="true"/>
+  <dynamicField name="*_ds" type="doubles" indexed="true" stored="true"/>
+  <dynamicField name="*_dt" type="date" indexed="true" stored="true"/>
+  <dynamicField name="*_ti" type="tint" indexed="true" stored="true"/>
+  <dynamicField name="*_tl" type="tlong" indexed="true" stored="true"/>
+  <dynamicField name="*_tf" type="tfloat" indexed="true" stored="true"/>
+  <dynamicField name="*_td" type="tdouble" indexed="true" stored="true"/>
+  <dynamicField name="*_ws" type="text_ws" indexed="true" stored="true"/>
+  <dynamicField name="*_i" type="int" indexed="true" stored="true"/>
+  <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+  <dynamicField name="*_l" type="long" indexed="true" stored="true"/>
+  <dynamicField name="*_t" type="text_general" indexed="true" stored="true"/>
+  <dynamicField name="*_b" type="boolean" indexed="true" stored="true"/>
+  <dynamicField name="*_f" type="float" indexed="true" stored="true"/>
+  <dynamicField name="*_d" type="double" indexed="true" stored="true"/>
+  <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
+  <dynamicField name="*_c" type="currency" indexed="true" stored="true"/>
+  <copyField source="*" dest="_text_"/>
+</schema>
